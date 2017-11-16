@@ -4,17 +4,18 @@ import org.litepal.crud.DataSupport;
 
 /**
  * Created by Administrator on 2017/11/15.
+ * 数据库映射对象，县
  */
 
 public class County extends DataSupport {
 
     private int id;
 
-    private String mName;   //名称
+    private String name;   //名称
 
-    private int mWeatherId;  //天气代号
+    private String weatherId;  //天气代号
 
-    private int mCityId;    //对应所属城市代号
+    private int cityId;    //对应所属城市代号
 
     public int getId() {
         return id;
@@ -25,26 +26,26 @@ public class County extends DataSupport {
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
-    public int getWeatherId() {
-        return mWeatherId;
+    public String getWeatherId() {
+        return weatherId;
     }
 
-    public void setWeatherId(int weatherId) {
-        mWeatherId = weatherId;
+    public void setWeatherId(String weatherId) {
+        this.weatherId = weatherId;
     }
 
     public int getCityId() {
-        return mCityId;
+        return cityId;
     }
 
     public void setCityId(int cityId) {
-        mCityId = cityId;
+        this.cityId = cityId;
     }
 }

@@ -4,17 +4,18 @@ import org.litepal.crud.DataSupport;
 
 /**
  * Created by Administrator on 2017/11/15.
+ * 数据库映射对象，市
  */
 
 public class City extends DataSupport {
 
     private int id;
 
-    private String mName;   //名称
+    private String name;   //名称
 
-    private int mCode;      //代号
+    private int code;      //代号
 
-    private int mProvinceId;    //对应所属省份代号
+    private int provinceId;    //对应所属省份代号
 
     public int getId() {
         return id;
@@ -25,26 +26,26 @@ public class City extends DataSupport {
     }
 
     public String getName() {
-        return mName;
+        return name;
     }
 
     public void setName(String name) {
-        mName = name;
+        this.name = name;
     }
 
     public int getCode() {
-        return mCode;
+        return code;
     }
 
     public void setCode(int code) {
-        mCode = code;
+        this.code = code;
     }
 
     public int getProvinceId() {
-        return mProvinceId;
+        return provinceId;
     }
 
     public void setProvinceId(int provinceId) {
-        mProvinceId = provinceId;
+        this.provinceId = provinceId;
     }
 }
