@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:text="@string/show_suggestion"
-        android:textColor="@color/lightText"/>
+        android:textColor="@color/lightText"
+        android:textSize="@dimen/segment_title"/>
 
     <TextView
         android:id="@+id/comfort_text"

@@ -5,4 +5,7 @@
     <string name="show_aqi">AQI指数</string>
     <string name="show_pm25">PM2.5指数</string>
     <string name="show_suggestion">生活建议</string>
+    <string name="show_forecast_info">气候</string>
+    <string name="show_forecast_max">高</string>
+    <string name="show_forecast_min">低</string>
 </resources>
