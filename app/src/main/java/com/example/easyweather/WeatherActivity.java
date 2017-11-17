@@ -1,5 +1,6 @@
 package com.example.easyweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.easyweather.gson.Forecast;
 import com.example.easyweather.gson.Weather;
+import com.example.easyweather.service.AutoUpdateService;
 import com.example.easyweather.util.HttpUtil;
 import com.example.easyweather.util.Utility;
 
@@ -244,5 +246,8 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
         weatherLayout.setVisibility(View.VISIBLE);
+        //启动自动更新服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 }
