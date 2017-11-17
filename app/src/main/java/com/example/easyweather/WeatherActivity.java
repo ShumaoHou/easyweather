@@ -6,11 +6,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.easyweather.gson.Forecast;
 import com.example.easyweather.gson.Weather;
 import com.example.easyweather.util.HttpUtil;
@@ -26,6 +28,7 @@ public class WeatherActivity extends AppCompatActivity {
 
     private final String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
 
+    private ImageView weatherBgPic;
     private  ScrollView weatherLayout;
     private LinearLayout forecastLayout;
     private TextView titleCity;
@@ -44,6 +47,7 @@ public class WeatherActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weather);
 
        //初始化控件
+        weatherBgPic = findViewById(R.id.weather_bg_pic);
         weatherLayout = findViewById(R.id.weather_layout);
         forecastLayout = findViewById(R.id.forecast_layout);
         titleCity = findViewById(R.id.title_city);
@@ -68,6 +72,43 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+
+        //设置天气背景图
+        String bgPic = prefs.getString("bg_pic",null);
+        if(bgPic != null){
+            Glide.with(this).load(bgPic).into(weatherBgPic);
+        }else{
+            loadBgPic();
+        }
+    }
+
+    /**
+     * 加载天气背景图片
+     */
+    private void loadBgPic() {
+        String requestBgPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bgPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager
+                        .getDefaultSharedPreferences(WeatherActivity.this)
+                        .edit();
+                editor.putString("bg_pic", null);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bgPic).into(weatherBgPic);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -108,6 +149,7 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
+        loadBgPic();
     }
 
     /**
