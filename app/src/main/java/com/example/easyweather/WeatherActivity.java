@@ -1,15 +1,17 @@
 package com.example.easyweather;
 
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -30,7 +32,6 @@ import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
 
-    private final String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
     private String mWeatherId;
 
     private ImageView weatherBgPic;
@@ -45,7 +46,10 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView comfortText;
     private TextView carWashText;
     private TextView sportText;
-    private SwipeRefreshLayout swipeRefreshLayout;
+    private Button titleCityBtn;
+
+    public SwipeRefreshLayout swipeRefreshLayout;
+    public DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,13 +79,22 @@ public class WeatherActivity extends AppCompatActivity {
         pm25Text = findViewById(R.id.pm25_text);
         comfortText = findViewById(R.id.comfort_text);
         carWashText = findViewById(R.id.car_wash_text);
-        sportText = findViewById(R.id.car_wash_text);
+        sportText = findViewById(R.id.sport_text);
+        drawerLayout = findViewById(R.id.drawer_layout);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 requestWeather(mWeatherId);
+            }
+        });
+
+        titleCityBtn = findViewById(R.id.title_city_btn);
+        titleCityBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(GravityCompat.START);
             }
         });
 
@@ -141,7 +154,8 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据天气id请求城市天气信息
      * @param weatherId
      */
-    private void requestWeather(final String weatherId) {
+    public void requestWeather(final String weatherId) {
+        String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=" + WEATHER_KEY;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -183,7 +197,6 @@ public class WeatherActivity extends AppCompatActivity {
 
     /**
      * 处理并展示Weather实体类中的数据
-     * @param weather
      */
     private void showWeatherInfo(Weather weather) {
 
@@ -203,7 +216,7 @@ public class WeatherActivity extends AppCompatActivity {
         comfortText.setText(comfort);
 
         String carWash = "洗车指数：" + weather.suggestion.carWash.info;   //洗车指数
-        comfortText.setText(carWash);
+        carWashText.setText(carWash);
 
         String sport = "运动建议：" + weather.suggestion.sport.info;   //运动建议
         sportText.setText(sport);

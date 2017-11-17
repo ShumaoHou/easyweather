@@ -22,7 +22,6 @@ import com.example.easyweather.util.HttpUtil;
 import com.example.easyweather.util.Utility;
 
 import org.litepal.crud.DataSupport;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,10 +59,10 @@ public class ChooseAreaFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.choose_area,container,false);
-        mTitleText = (TextView) view.findViewById(R.id.title_text);
-        mBackButton = (Button) view.findViewById(R.id.back_button);
-        mListView = (ListView) view.findViewById(R.id.list_view);
-        mAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_list_item_1,dataList);
+        mTitleText =  view.findViewById(R.id.title_text);
+        mBackButton =  view.findViewById(R.id.back_button);
+        mListView =  view.findViewById(R.id.list_view);
+        mAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
         mListView.setAdapter(mAdapter);
         return view;
     }
@@ -82,10 +81,26 @@ public class ChooseAreaFragment extends Fragment {
                     queryCounties();
                 }else if(mCurrentLevel == LEVEL_COUNTY){
                     String weatherId = mCountyList.get(i).getWeatherId();
-                    Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    if(getActivity() instanceof MainActivity){
+                        //当前活动为MainActivity，即从未选择过城市
+                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
+                        intent.putExtra("weather_id",weatherId);
+                        startActivity(intent);
+                        getActivity().finish();
+                    } else if(getActivity() instanceof WeatherActivity) {
+                        //当前活动为WeatherActivity，即已经选择过城市，侧边滑出选择
+                        WeatherActivity activity = (WeatherActivity) getActivity();
+                        activity.drawerLayout.closeDrawers();
+                        activity.swipeRefreshLayout.setRefreshing(true);
+                        activity.requestWeather(weatherId);
+//                        if(weatherId == activity.getmWeatherId()){
+//                            //所选城市与当前城市一致
+//
+//                        }else{
+//
+//                        }
+                    }
+
                 }
             }
         });
