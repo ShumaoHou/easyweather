@@ -17,6 +17,8 @@ public class Weather {
 
     public AQI aqi;                     //今日空气质量指数
 
+    public Now now;                     //今日天气信息
+
     public Suggestion suggestion;       //今日天气建议
 
     @SerializedName("daily_forecast")
