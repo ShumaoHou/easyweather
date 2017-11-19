@@ -27,6 +27,7 @@ import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
 
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -43,6 +44,7 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView titleUpdateTime;
     private TextView degreeText;
     private TextView weatherInfoText;
+    private TextView nowMinMax;
     private TextView aqiText;
     private TextView pm25Text;
     private TextView comfortText;
@@ -77,6 +79,7 @@ public class WeatherActivity extends AppCompatActivity {
         titleUpdateTime = findViewById(R.id.title_update_time);
         degreeText = findViewById(R.id.degree_text);
         weatherInfoText = findViewById(R.id.weather_info_text);
+        nowMinMax = findViewById(R.id.now_min_max);
         aqiText = findViewById(R.id.aqi_text);
         pm25Text = findViewById(R.id.pm25_text);
         comfortText = findViewById(R.id.comfort_text);
@@ -113,7 +116,7 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
         }
-        //设置天气背景图
+        //界面初始化时设置天气背景图
         String bgPic = prefs.getString("bg_pic",null);
         if(bgPic != null){
             Glide.with(this).load(bgPic).into(weatherBgPic);
@@ -123,7 +126,7 @@ public class WeatherActivity extends AppCompatActivity {
     }
 
     /**
-     * 加载天气背景图片
+     * 从服务器加载天气背景图片
      */
     private void loadBgPic() {
         String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
@@ -193,7 +196,7 @@ public class WeatherActivity extends AppCompatActivity {
                 });
             }
         });
-        loadBgPic();
+        loadBgPic();    //更新天气背景图
     }
 
     /**
@@ -204,7 +207,7 @@ public class WeatherActivity extends AppCompatActivity {
         String cityName = weather.basic.cityName;   //城市名
         titleCity.setText(cityName);
 
-        String updateTime = weather.basic.update.updateTime.split(" ")[1];  //更新时间
+        String updateTime = "更新于:" + weather.basic.update.updateTime.split(" ")[1];  //更新时间
         titleUpdateTime.setText(updateTime);
 
         String degree = weather.now.temperature + "℃";  //温度
@@ -212,6 +215,9 @@ public class WeatherActivity extends AppCompatActivity {
 
         String weatherInfo = weather.now.more.info;     //天气情况
         weatherInfoText.setText(weatherInfo);
+
+        String nowMinMaxText = weather.forecastList.get(0).temperatrue.min + "°/" + weather.forecastList.get(0).temperatrue.max + "℃";
+        nowMinMax.setText(nowMinMaxText);
 
         String comfort = "舒适度：" + weather.suggestion.comfort.info;   //舒适度
         comfortText.setText(comfort);
@@ -224,7 +230,9 @@ public class WeatherActivity extends AppCompatActivity {
 
         //设置预报部分
         forecastLayout.removeAllViews();
-        for(Forecast forecast : weather.forecastList){
+        List<Forecast> forecastList = weather.forecastList;
+        for(int i = 1; i<forecastList.size();i++){
+            Forecast forecast = forecastList.get(i);
             //每个预报的天气项
             View view = LayoutInflater.from(this)
                     .inflate(R.layout.forecast_item, forecastLayout, false);
