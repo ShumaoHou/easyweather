@@ -101,4 +101,19 @@ public class Utility {
         }
         return null;
     }
+
+    /**
+     * 处理必应返回数据
+     */
+    public static String handleBgPic(String response){
+        try {
+            JSONArray imagesArray = new JSONObject(response).getJSONArray("images");
+            JSONObject jsonObject = imagesArray.getJSONObject(0);
+            String bgPic = jsonObject.getString("url");  //获取图片后缀地址
+            return "http://cn.bing.com"+bgPic;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

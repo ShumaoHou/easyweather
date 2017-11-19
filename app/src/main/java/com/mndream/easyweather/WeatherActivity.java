@@ -127,7 +127,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 加载天气背景图片
      */
     private void loadBgPic() {
-        String requestBgPic = "http://guolin.tech/api/bing_pic";
+        String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
         HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -136,7 +136,7 @@ public class WeatherActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String bgPic = response.body().string();
+                final String bgPic = Utility.handleBgPic(response.body().string());;
                 SharedPreferences.Editor editor = PreferenceManager
                         .getDefaultSharedPreferences(WeatherActivity.this)
                         .edit();
