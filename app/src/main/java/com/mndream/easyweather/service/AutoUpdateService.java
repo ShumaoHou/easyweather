@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
 
+import com.mndream.easyweather.WeatherActivity;
 import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
@@ -41,7 +42,7 @@ public class AutoUpdateService extends Service {
     }
 
     private void updateBgPic() {
-        String requestBgPic = "http://guolin.tech/api/bing_pic";
+        String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
         HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -50,7 +51,7 @@ public class AutoUpdateService extends Service {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String bgPic = response.body().string();
+                final String bgPic = Utility.handleBgPic(response.body().string());;
                 SharedPreferences.Editor editor = PreferenceManager
                         .getDefaultSharedPreferences(AutoUpdateService.this)
                         .edit();

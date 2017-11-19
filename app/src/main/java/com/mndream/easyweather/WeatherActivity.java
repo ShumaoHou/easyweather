@@ -113,7 +113,6 @@ public class WeatherActivity extends AppCompatActivity {
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(mWeatherId);
         }
-
         //设置天气背景图
         String bgPic = prefs.getString("bg_pic",null);
         if(bgPic != null){
