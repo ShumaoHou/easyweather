@@ -1,4 +1,4 @@
-package com.example.easyweather;
+package com.mndream.easyweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;

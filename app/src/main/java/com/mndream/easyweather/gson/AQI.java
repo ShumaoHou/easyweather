@@ -1,4 +1,4 @@
-package com.example.easyweather.gson;
+package com.mndream.easyweather.gson;
 
 /**
  * Created by Administrator on 2017/11/16.

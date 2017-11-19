@@ -1,4 +1,4 @@
-package com.example.easyweather.service;
+package com.mndream.easyweather.service;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -8,15 +8,10 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
-import android.view.View;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.example.easyweather.MyApplication;
-import com.example.easyweather.WeatherActivity;
-import com.example.easyweather.gson.Weather;
-import com.example.easyweather.util.HttpUtil;
-import com.example.easyweather.util.Utility;
+import com.mndream.easyweather.gson.Weather;
+import com.mndream.easyweather.util.HttpUtil;
+import com.mndream.easyweather.util.Utility;
 
 import java.io.IOException;
 

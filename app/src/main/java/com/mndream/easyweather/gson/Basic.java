@@ -1,4 +1,4 @@
-package com.example.easyweather.gson;
+package com.mndream.easyweather.gson;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,4 +1,4 @@
-package com.example.easyweather;
+package com.mndream.easyweather;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -15,11 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.easyweather.db.City;
-import com.example.easyweather.db.County;
-import com.example.easyweather.db.Province;
-import com.example.easyweather.util.HttpUtil;
-import com.example.easyweather.util.Utility;
+import com.mndream.easyweather.db.City;
+import com.mndream.easyweather.db.County;
+import com.mndream.easyweather.db.Province;
+import com.mndream.easyweather.util.HttpUtil;
+import com.mndream.easyweather.util.Utility;
 
 import org.litepal.crud.DataSupport;
 

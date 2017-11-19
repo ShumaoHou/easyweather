@@ -1,4 +1,4 @@
-package com.example.easyweather.util;
+package com.mndream.easyweather.util;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

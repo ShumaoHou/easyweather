@@ -1,4 +1,4 @@
-package com.example.easyweather.db;
+package com.mndream.easyweather.db;
 
 import org.litepal.crud.DataSupport;
 

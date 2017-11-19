@@ -1,4 +1,4 @@
-package com.example.easyweather;
+package com.mndream.easyweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,11 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.easyweather.gson.Forecast;
-import com.example.easyweather.gson.Weather;
-import com.example.easyweather.service.AutoUpdateService;
-import com.example.easyweather.util.HttpUtil;
-import com.example.easyweather.util.Utility;
+import com.mndream.easyweather.gson.Forecast;
+import com.mndream.easyweather.gson.Weather;
+import com.mndream.easyweather.service.AutoUpdateService;
+import com.mndream.easyweather.util.HttpUtil;
+import com.mndream.easyweather.util.Utility;
 
 import java.io.IOException;
 
@@ -140,7 +140,7 @@ public class WeatherActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = PreferenceManager
                         .getDefaultSharedPreferences(WeatherActivity.this)
                         .edit();
-                editor.putString("bg_pic", null);
+                editor.putString("bg_pic", bgPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {
                     @Override

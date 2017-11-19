@@ -1,4 +1,4 @@
-package com.example.easyweather;
+package com.mndream.easyweather;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

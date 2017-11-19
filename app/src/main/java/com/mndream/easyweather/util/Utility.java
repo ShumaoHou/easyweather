@@ -1,11 +1,11 @@
-package com.example.easyweather.util;
+package com.mndream.easyweather.util;
 
 import android.text.TextUtils;
 
-import com.example.easyweather.db.City;
-import com.example.easyweather.db.County;
-import com.example.easyweather.db.Province;
-import com.example.easyweather.gson.Weather;
+import com.mndream.easyweather.db.City;
+import com.mndream.easyweather.db.County;
+import com.mndream.easyweather.db.Province;
+import com.mndream.easyweather.gson.Weather;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;

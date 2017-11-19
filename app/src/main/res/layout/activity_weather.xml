@@ -9,7 +9,7 @@
         android:id="@+id/weather_bg_pic"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop" />
 
     <android.support.v4.widget.DrawerLayout
         android:id="@+id/drawer_layout"
@@ -52,7 +52,7 @@
 
         <fragment
             android:id="@+id/choose_area_fragment"
-            android:name="com.example.easyweather.ChooseAreaFragment"
+            android:name="com.mndream.easyweather.ChooseAreaFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"

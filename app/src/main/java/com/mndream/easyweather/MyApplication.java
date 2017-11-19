@@ -1,4 +1,4 @@
-package com.example.easyweather;
+package com.mndream.easyweather;
 
 import android.app.Application;
 import android.content.Context;
