@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="segment_title">20sp</dimen>
+    <dimen name="now_icon_size">30dp</dimen>
+    <dimen name="now_txt">15sp</dimen>
 </resources>

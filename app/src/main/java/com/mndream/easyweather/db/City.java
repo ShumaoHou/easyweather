@@ -1,27 +1,32 @@
 package com.mndream.easyweather.db;
 
-import org.litepal.crud.DataSupport;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 /**
  * Created by Administrator on 2017/11/15.
  * 数据库映射对象，市
  */
 
-public class City extends DataSupport {
+@Table(database = WeatherDatabase.class)
+public class City extends BaseModel {
 
-    private int id;
+    @PrimaryKey(autoincrement = true)
+    private long id;
 
+    @Column
     private String name;   //名称
 
-    private int code;      //代号
+    @Column
+    private String province;    //所属省份名
 
-    private int provinceId;    //对应所属省份代号
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -33,19 +38,11 @@ public class City extends DataSupport {
         this.name = name;
     }
 
-    public int getCode() {
-        return code;
+    public String getProvince() {
+        return province;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public int getProvinceId() {
-        return provinceId;
-    }
-
-    public void setProvinceId(int provinceId) {
-        this.provinceId = provinceId;
+    public void setProvince(String province) {
+        this.province = province;
     }
 }

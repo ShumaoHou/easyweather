@@ -66,14 +66,14 @@ public class AutoUpdateService extends Service {
      */
     private void updateWeather() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString("weather",null);
+        String weatherString = prefs.getString("weather6",null);
         if(weatherString != null){
             //获取天气ID
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            String weatherId = weather.basic.weatherId;
+            String weatherId = weather.basic.cityName;
             //向服务器请求天气信息
             String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
-            String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=" + WEATHER_KEY;
+            String weatherUrl = "https://free-api.heweather.com/s6/weather?key=" + WEATHER_KEY + "&location=" + weatherId;
             HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
@@ -90,7 +90,7 @@ public class AutoUpdateService extends Service {
                         SharedPreferences.Editor editor = PreferenceManager
                                 .getDefaultSharedPreferences(AutoUpdateService.this)
                                 .edit();
-                        editor.putString("weather",responseText);
+                        editor.putString("weather6",responseText);
                         editor.apply();
                     }
                 }

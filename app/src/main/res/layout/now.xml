@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="10dp">
+    android:layout_margin="15dp">
 
     <TextView
         android:id="@+id/degree_text"
@@ -12,9 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:textColor="@color/lightText"
-        android:textSize="50sp"
+        android:textSize="60sp"
         />
-
     <TextView
         android:id="@+id/weather_info_text"
         android:layout_width="wrap_content"
@@ -22,9 +21,15 @@
         android:layout_gravity="end"
         android:textColor="@color/lightText"
         android:textSize="@dimen/segment_title"/>
-
     <TextView
         android:id="@+id/now_min_max"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:textColor="@color/lightText"
+        android:textSize="@dimen/segment_title"/>
+    <TextView
+        android:id="@+id/now_feeling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"

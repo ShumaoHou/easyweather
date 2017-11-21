@@ -4,32 +4,23 @@ import com.google.gson.annotations.SerializedName;
 
 /**
  * Created by Administrator on 2017/11/16.
- * 天气-未来某天
+ * 天气-预报信息
  */
 
 public class Forecast {
 
-    public String date;     //预测日期
+    public String date;     //预报日期
 
-    @SerializedName("tmp")
-    public Temperatrue temperatrue;
+    @SerializedName("tmp_max")
+    public String max;          //最高气温
 
-    @SerializedName("cond")
-    public More more;
+    @SerializedName("tmp_min")
+    public String min;          //最低气温
 
-    public class Temperatrue{
+    @SerializedName("cond_txt_d")
+    public String conditionDay; //白天天气状况
 
-        public String max;      //最高气温
-
-        public String min;      //最低气温
-
-    }
-
-    public class More{
-
-        @SerializedName("txt_d")
-        public String info;         //未来天气状况
-
-    }
+    @SerializedName("cond_txt_n")
+    public String conditionNight; //晚间天气状况
 
 }

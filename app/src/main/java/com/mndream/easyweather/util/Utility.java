@@ -12,88 +12,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Administrator on 2017/11/15.
  * 处理json返回数据的工具类
  */
 
 public class Utility {
-    /**
-     * 解析和处理服务器返回的省级数据
-     */
-    public static boolean handleProvinceResponse(String response){
-        if(!TextUtils.isEmpty(response)){
-            try {
-                JSONArray allProvinces = new JSONArray(response);
-                for(int i=0;i<allProvinces.length();i++){
-                    JSONObject provinceObject = allProvinces.getJSONObject(i);
-                    Province province = new Province();
-                    province.setName(provinceObject.getString("name"));
-                    province.setCode(provinceObject.getInt("id"));
-                    province.save();
-                }
-                return true;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 解析和处理服务器返回的市级数据
-     */
-    public static boolean handleCityResponse(String response, int provinceId){
-        if(!TextUtils.isEmpty(response)){
-            try {
-                JSONArray allCities = new JSONArray(response);
-                for(int i=0;i<allCities.length();i++){
-                    JSONObject cityObject = allCities.getJSONObject(i);
-                    City city = new City();
-                    city.setName(cityObject.getString("name"));
-                    city.setCode(cityObject.getInt("id"));
-                    city.setProvinceId(provinceId);
-                    city.save();
-                }
-                return true;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 解析和处理服务器返回的县级数据
-     */
-    public static boolean handleCountyResponse(String response,int cityId){
-        if(!TextUtils.isEmpty(response)){
-            try {
-                JSONArray allCounties = new JSONArray(response);
-                for(int i=0;i<allCounties.length();i++){
-                    JSONObject countyObject = allCounties.getJSONObject(i);
-                    County county = new County();
-                    county.setName(countyObject.getString("name"));
-                    county.setCityId(cityId);
-                    county.setWeatherId(countyObject.getString("weather_id")); //weather_id为String类型
-                    county.save();
-                }
-                return true;
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
-    }
 
     /**
      * 将返回的JSON数据解析成Weather实体类
      */
     public static Weather handleWeatherResponse(String response){
-        JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(response);
-            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
+            JSONArray jsonArray = new JSONObject(response).getJSONArray("HeWeather6");
             String weatherContent = jsonArray.getJSONObject(0).toString();  //获取Weather对应JSON数据
             return new Gson().fromJson(weatherContent,Weather.class);       //使用Gson返回对应的对象
         } catch (Exception e) {
@@ -115,5 +49,85 @@ public class Utility {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * 查询jsonBody所有省份名，保存数据库
+     */
+    public static boolean handleProvince(String jsonBody){
+        if(!TextUtils.isEmpty(jsonBody)){
+            try {
+                List<String> dataList = new ArrayList<>();  //缓存省份名
+                JSONArray jsonArray = new JSONArray(jsonBody);
+                for(int i=0;i<jsonArray.length();i++){
+                    JSONObject provinceObject = jsonArray.getJSONObject(i);
+                    String provinceName = provinceObject.getString("province"); //逐个获取相应省份名
+                    if(!dataList.contains(provinceName)){   //未存储的省份就进行存储
+                        dataList.add(provinceName);
+                        Province province = new Province();
+                        province.setName(provinceName);
+                        province.save();
+                    }
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 查询jsonBody中所有provinceName下的城市名，保存数据库
+     */
+    public static boolean handleCity(String jsonBody,String provinceName){
+        if(!TextUtils.isEmpty(jsonBody)){
+            try {
+                List<String> dataList = new ArrayList<>();  //缓存城市名
+                JSONArray jsonArray = new JSONArray(jsonBody);
+                for(int i=0;i<jsonArray.length();i++){
+                    JSONObject cityObject = jsonArray.getJSONObject(i);
+                    String cityName = cityObject.getString("city"); //逐个获取相应城市名
+                    String province = cityObject.getString("province");
+                    if(provinceName.equals(province) && !dataList.contains(cityName)){   //未存储的城市就进行存储
+                        dataList.add(cityName);
+                        City city = new City();
+                        city.setName(cityName);
+                        city.setProvince(provinceName);
+                        city.save();
+                    }
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 查询jsonBody中所有cityName下的县名，保存数据库
+     */
+    public static boolean handleCounty(String jsonBody,String cityName){
+        if(!TextUtils.isEmpty(jsonBody)){
+            try {
+                JSONArray jsonArray = new JSONArray(jsonBody);
+                for(int i=0;i<jsonArray.length();i++){
+                    JSONObject countyObject = jsonArray.getJSONObject(i);
+                    String countyName = countyObject.getString("county"); //逐个获取相应县名
+                    String city = countyObject.getString("city");
+                    if(cityName.equals(city)){
+                        County county = new County();
+                        county.setName(countyName);
+                        county.setCity(cityName);
+                        county.save();
+                    }
+                }
+                return true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
 }

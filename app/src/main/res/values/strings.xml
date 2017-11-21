@@ -8,4 +8,6 @@
     <string name="show_forecast_info">气候</string>
     <string name="show_forecast_max">高</string>
     <string name="show_forecast_min">低</string>
+    <string name="show_forecast_cond_d">白天</string>
+    <string name="show_forecast_cond_n">晚间</string>
 </resources>

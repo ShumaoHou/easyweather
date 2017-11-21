@@ -13,13 +13,11 @@ public class Weather {
 
     public String status;               //请求结果
 
-    public Basic basic;                 //今日天气基本信息
+    public Basic basic;                 //地区名
 
-    public AQI aqi;                     //今日空气质量指数
+    public Update update;               //更新时间
 
-    public Now now;                     //今日天气信息
-
-    public Suggestion suggestion;       //今日天气建议
+    public Now now;                     //实况天气
 
     @SerializedName("daily_forecast")
     public List<Forecast> forecastList; //未来几天天气状况

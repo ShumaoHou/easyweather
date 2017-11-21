@@ -3,6 +3,8 @@ package com.mndream.easyweather;
 import android.app.Application;
 import android.content.Context;
 
+import com.raizlabs.android.dbflow.config.FlowManager;
+
 import org.litepal.LitePal;
 
 /**
@@ -15,7 +17,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         sContext = getApplicationContext();
-        LitePal.initialize(sContext);
+        FlowManager.init(this);
     }
 
     public static Context getContext(){

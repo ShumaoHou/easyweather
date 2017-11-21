@@ -8,14 +8,7 @@
 
     <TextView
         android:id="@+id/data_text"
-        android:layout_weight="2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="@color/lightText"/>
-
-    <TextView
-        android:id="@+id/info_text"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/lightText"
@@ -27,7 +20,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/lightText"
-        android:gravity="right"/>
+        android:gravity="center"/>
 
     <TextView
         android:id="@+id/max_text"
@@ -35,6 +28,22 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:textColor="@color/lightText"
-        android:gravity="right"/>
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/cond_d_text"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightText"
+        android:gravity="center"/>
+
+    <TextView
+        android:id="@+id/cond_n_text"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/lightText"
+        android:gravity="center"/>
 
 </LinearLayout>

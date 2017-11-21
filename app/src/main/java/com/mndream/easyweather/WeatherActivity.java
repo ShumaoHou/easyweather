@@ -37,23 +37,26 @@ public class WeatherActivity extends AppCompatActivity {
 
     private String mWeatherId;
 
-    private ImageView weatherBgPic;
-    private  ScrollView weatherLayout;
-    private LinearLayout forecastLayout;
-    private TextView titleCity;
-    private TextView titleUpdateTime;
-    private TextView degreeText;
-    private TextView weatherInfoText;
-    private TextView nowMinMax;
-    private TextView aqiText;
-    private TextView pm25Text;
-    private TextView comfortText;
-    private TextView carWashText;
-    private TextView sportText;
-    private Button titleCityBtn;
-
     public SwipeRefreshLayout swipeRefreshLayout;
     public DrawerLayout drawerLayout;
+    private ImageView weatherBgPic;
+    private  ScrollView weatherLayout;
+    private TextView titleCity;
+    private TextView titleUpdateTime;
+    private TextView nowDegreeText;
+    private TextView nowConditionText;
+    private TextView nowMinMax;
+    private TextView nowFeelingText;
+    private TextView now1txt;
+    private TextView now2txt;
+    private TextView now3txt;
+    private TextView now4txt;
+    private TextView now5txt;
+    private TextView now6txt;
+    private TextView now7txt;
+    private TextView now8txt;
+    private LinearLayout forecastLayout;
+    private Button titleCityBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,20 +75,24 @@ public class WeatherActivity extends AppCompatActivity {
         }
 
        //初始化控件
+        drawerLayout = findViewById(R.id.drawer_layout);
         weatherBgPic = findViewById(R.id.weather_bg_pic);
         weatherLayout = findViewById(R.id.weather_layout);
-        forecastLayout = findViewById(R.id.forecast_layout);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime = findViewById(R.id.title_update_time);
-        degreeText = findViewById(R.id.degree_text);
-        weatherInfoText = findViewById(R.id.weather_info_text);
+        nowDegreeText = findViewById(R.id.degree_text);
+        nowConditionText = findViewById(R.id.weather_info_text);
         nowMinMax = findViewById(R.id.now_min_max);
-        aqiText = findViewById(R.id.aqi_text);
-        pm25Text = findViewById(R.id.pm25_text);
-        comfortText = findViewById(R.id.comfort_text);
-        carWashText = findViewById(R.id.car_wash_text);
-        sportText = findViewById(R.id.sport_text);
-        drawerLayout = findViewById(R.id.drawer_layout);
+        nowFeelingText = findViewById(R.id.now_feeling);
+        now1txt = findViewById(R.id.now_1_txt);
+        now2txt = findViewById(R.id.now_2_txt);
+        now3txt = findViewById(R.id.now_3_txt);
+        now4txt = findViewById(R.id.now_4_txt);
+        now5txt = findViewById(R.id.now_5_txt);
+        now6txt = findViewById(R.id.now_6_txt);
+        now7txt = findViewById(R.id.now_7_txt);
+        now8txt = findViewById(R.id.now_8_txt);
+        forecastLayout = findViewById(R.id.forecast_layout);
         swipeRefreshLayout = findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -104,11 +111,11 @@ public class WeatherActivity extends AppCompatActivity {
         });
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherString = prefs.getString("weather",null);
+        String weatherString = prefs.getString("weather6",null);
         if(weatherString != null){
             //有缓存则直接解析天气数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.weatherId;
+            mWeatherId = weather.basic.cityName;
             showWeatherInfo(weather);
         }else{
             //无缓存则去服务器查询天气
@@ -160,7 +167,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     public void requestWeather(final String weatherId) {
         String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
-        String weatherUrl = "http://guolin.tech/api/weather?cityid=" + weatherId + "&key=" + WEATHER_KEY;
+        String weatherUrl = "https://free-api.heweather.com/s6/weather?key=" + WEATHER_KEY + "&location=" + weatherId;
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -182,9 +189,10 @@ public class WeatherActivity extends AppCompatActivity {
                             SharedPreferences.Editor editor = PreferenceManager
                                     .getDefaultSharedPreferences(WeatherActivity.this)
                                     .edit();
-                            editor.putString("weather",responseText);
+                            editor.putString("weather6",responseText);
+                            editor.remove("weather");   //除去V1.0数据
                             editor.apply();
-                            mWeatherId = weather.basic.weatherId;
+                            mWeatherId = weather.basic.cityName;
                             //展示天气数据
                             showWeatherInfo(weather);
                         }else{
@@ -207,28 +215,47 @@ public class WeatherActivity extends AppCompatActivity {
         String cityName = weather.basic.cityName;   //城市名
         titleCity.setText(cityName);
 
-        String updateTime = "更新于:" + weather.basic.update.updateTime.split(" ")[1];  //更新时间
+        String updateTime = "更新于:" + weather.update.updateTime.split(" ")[1];  //更新时间
         titleUpdateTime.setText(updateTime);
 
         String degree = weather.now.temperature + "℃";  //温度
-        degreeText.setText(degree);
+        nowDegreeText.setText(degree);
 
-        String weatherInfo = weather.now.more.info;     //天气情况
-        weatherInfoText.setText(weatherInfo);
+        String conditionInfo = weather.now.condition;     //天气情况
+        nowConditionText.setText(conditionInfo);
 
-        String nowMinMaxText = weather.forecastList.get(0).temperatrue.min + "°/" + weather.forecastList.get(0).temperatrue.max + "℃";
+        String nowMinMaxText = weather.forecastList.get(0).min+ "°/" + weather.forecastList.get(0).max + "°";   //温度范围
         nowMinMax.setText(nowMinMaxText);
 
-        String comfort = "舒适度：" + weather.suggestion.comfort.info;   //舒适度
-        comfortText.setText(comfort);
+        String feeling = "体感" + weather.now.feeling + "°";   //体感温度
+        nowFeelingText.setText(feeling);
 
-        String carWash = "洗车指数：" + weather.suggestion.carWash.info;   //洗车指数
-        carWashText.setText(carWash);
+        String hum = "相对湿度\n" + weather.now.hum + "%";           //相对湿度
+        now1txt.setText(hum);
 
-        String sport = "运动建议：" + weather.suggestion.sport.info;   //运动建议
-        sportText.setText(sport);
+        String windDir = "风向\n" + weather.now.windDir;   //风向
+        now2txt.setText(windDir);
+
+        String windSc = "风力\n" + weather.now.windSc + "级";     //风力
+        now3txt.setText(windSc);
+
+        String windSpd = "风速\n" + weather.now.windSpd +"km/h";   //风速
+        now4txt.setText(windSpd);
+
+        String pres = "大气压强\n" + weather.now.pres + "hPa";         //大气压强
+        now5txt.setText(pres);
+
+        String pcpn = "降水量\n" + weather.now.pcpn + "mm";         //降水量
+        now6txt.setText(pcpn);
+
+        String vis = "能见度\n" + weather.now.vis + "km";           //能见度
+        now7txt.setText(vis);
+
+        String cloud = "云量\n" + weather.now.cloud;       //云量
+        now8txt.setText(cloud);
 
         //设置预报部分
+        String[] dateCall = new String[]{"今天","明天","后天","大后天"};
         forecastLayout.removeAllViews();
         List<Forecast> forecastList = weather.forecastList;
         for(int i = 1; i<forecastList.size();i++){
@@ -237,19 +264,26 @@ public class WeatherActivity extends AppCompatActivity {
             View view = LayoutInflater.from(this)
                     .inflate(R.layout.forecast_item, forecastLayout, false);
             TextView dateText = view.findViewById(R.id.data_text);
-            dateText.setText(forecast.date);
-            TextView infoText = view.findViewById(R.id.info_text);
-            infoText.setText(forecast.more.info);
+            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2];
+            if(i<=3){
+                dateString += "\t\t" + dateCall[i];
+            }
+            dateText.setText(dateString);
+//            TextView infoText = view.findViewById(R.id.info_text);
+//            infoText.setText(forecast.conditionDay + " " + forecast.conditionNight);
             TextView maxText = view.findViewById(R.id.max_text);
-            maxText.setText(forecast.temperatrue.max + "℃");
+            String maxString = forecast.max + "℃";
+            maxText.setText(maxString);
             TextView minText = view.findViewById(R.id.min_text);
-            minText.setText(forecast.temperatrue.min + "℃");
+            String minString = forecast.min + "℃";
+            minText.setText(minString);
+            TextView condDText = view.findViewById(R.id.cond_d_text);
+            String condDString = forecast.conditionDay;
+            condDText.setText(condDString);
+            TextView condNText = view.findViewById(R.id.cond_n_text);
+            String condNString = forecast.conditionNight;
+            condNText.setText(condNString);
             forecastLayout.addView(view);
-        }
-
-        if(weather.aqi != null){
-            aqiText.setText(weather.aqi.city.aqi);
-            pm25Text.setText(weather.aqi.city.pm25);
         }
 
         weatherLayout.setVisibility(View.VISIBLE);

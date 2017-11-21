@@ -38,11 +38,9 @@
 
                     <include layout="@layout/now"/>
 
+                    <include layout="@layout/now_show"/>
+
                     <include layout="@layout/forecast"/>
-
-                    <include layout="@layout/aqi"/>
-
-                    <include layout="@layout/suggestion"/>
 
                 </LinearLayout>
 
@@ -55,8 +53,9 @@
             android:name="com.mndream.easyweather.ChooseAreaFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="start"
-            />
+            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_marginBottom="?attr/actionBarSize"
+            android:layout_gravity="start" />
     </android.support.v4.widget.DrawerLayout>
 
 

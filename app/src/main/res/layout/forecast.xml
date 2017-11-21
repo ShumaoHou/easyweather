@@ -15,22 +15,14 @@
         android:layout_margin="15dp">
 
         <TextView
-            android:layout_weight="2"
+            android:layout_weight="1.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast"
             android:textColor="@color/lightText"
             android:textSize="@dimen/segment_title"
+            android:gravity="center"
             />
-
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast_info"
-            android:textColor="@color/lightText"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"/>
 
         <TextView
             android:layout_weight="1"
@@ -39,7 +31,7 @@
             android:text="@string/show_forecast_min"
             android:textColor="@color/lightText"
             android:textSize="@dimen/segment_title"
-            android:gravity="right"/>
+            android:gravity="center"/>
 
         <TextView
             android:layout_weight="1"
@@ -48,7 +40,25 @@
             android:text="@string/show_forecast_max"
             android:textColor="@color/lightText"
             android:textSize="@dimen/segment_title"
-            android:gravity="right"/>
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/show_forecast_cond_d"
+            android:textColor="@color/lightText"
+            android:textSize="@dimen/segment_title"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/show_forecast_cond_n"
+            android:textColor="@color/lightText"
+            android:textSize="@dimen/segment_title"
+            android:gravity="center"/>
 
     </LinearLayout>
 

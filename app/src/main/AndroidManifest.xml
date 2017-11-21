@@ -7,7 +7,7 @@
     <application
         android:name="com.mndream.easyweather.MyApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/logo"
+        android:icon="@mipmap/logo_1_1"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
