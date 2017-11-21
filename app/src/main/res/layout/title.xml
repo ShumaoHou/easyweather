@@ -31,6 +31,6 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:textColor="@color/lightText"
-        android:textSize="14sp"/>
+        android:textSize="@dimen/segment_title"/>
 
 </RelativeLayout>
