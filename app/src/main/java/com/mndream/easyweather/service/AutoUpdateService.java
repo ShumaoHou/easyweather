@@ -8,7 +8,9 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
+import com.mndream.easyweather.MyApplication;
 import com.mndream.easyweather.WeatherActivity;
 import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.util.HttpUtil;
@@ -29,8 +31,14 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        updateWeather();
-        updateBgPic();
+        if (WeatherActivity.isNetworkConnected(MyApplication.getContext())){
+            updateWeather();
+            updateBgPic();
+        }else{
+            Toast.makeText(MyApplication.getContext(),
+                    "自动更新不可用，请连接网络后重试",Toast.LENGTH_SHORT).show();
+        }
+
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
         int cycleTime = 15 * 60 * 1000; //一周期15分钟的毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + cycleTime;

@@ -1,7 +1,10 @@
 package com.mndream.easyweather;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.view.GravityCompat;
@@ -142,29 +145,36 @@ public class WeatherActivity extends AppCompatActivity {
      * 从服务器加载天气背景图片
      */
     private void loadBgPic() {
-        String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
-        HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+        if(isNetworkConnected(MyApplication.getContext())){
+            String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
+            HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String bgPic = Utility.handleBgPic(response.body().string());;
-                SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(WeatherActivity.this)
-                        .edit();
-                editor.putString("bg_pic", bgPic);
-                editor.apply();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Glide.with(WeatherActivity.this).load(bgPic).into(weatherBgPic);
-                    }
-                });
-            }
-        });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String bgPic = Utility.handleBgPic(response.body().string());;
+                    SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(WeatherActivity.this)
+                            .edit();
+                    editor.putString("bg_pic", bgPic);
+                    editor.apply();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Glide.with(WeatherActivity.this).load(bgPic).into(weatherBgPic);
+                        }
+                    });
+                }
+            });
+        }else{
+            Toast.makeText(WeatherActivity.this,
+                    "请连接网络后重试",Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
     }
 
     /**
@@ -172,45 +182,52 @@ public class WeatherActivity extends AppCompatActivity {
      * @param weatherId
      */
     public void requestWeather(final String weatherId) {
-        String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
-        String weatherUrl = "https://free-api.heweather.com/s6/weather?key=" + WEATHER_KEY + "&location=" + weatherId;
-        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Toast.makeText(MyApplication.getContext(),
-                        "获取天气信息失败",Toast.LENGTH_SHORT).show();
-                swipeRefreshLayout.setRefreshing(false);
-            }
+        if(isNetworkConnected(MyApplication.getContext())){
+            String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
+            String weatherUrl = "https://free-api.heweather.com/s6/weather?key=" + WEATHER_KEY + "&location=" + weatherId;
+            HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Toast.makeText(MyApplication.getContext(),
+                            "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String responseText = response.body().string();
-                final Weather weather = Utility.handleWeatherResponse(responseText);
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String responseText = response.body().string();
+                    final Weather weather = Utility.handleWeatherResponse(responseText);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(weather != null && "ok".equals(weather.status)){
-                            //将天气数据缓存
-                            SharedPreferences.Editor editor = PreferenceManager
-                                    .getDefaultSharedPreferences(WeatherActivity.this)
-                                    .edit();
-                            editor.putString("weather6",responseText);
-                            editor.remove("weather");   //除去V1.0数据
-                            editor.apply();
-                            mWeatherId = weather.basic.cityName;
-                            //展示天气数据
-                            showWeatherInfo(weather);
-                        }else{
-                            Toast.makeText(WeatherActivity.this,
-                                    "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(weather != null && "ok".equals(weather.status)){
+                                //将天气数据缓存
+                                SharedPreferences.Editor editor = PreferenceManager
+                                        .getDefaultSharedPreferences(WeatherActivity.this)
+                                        .edit();
+                                editor.putString("weather6",responseText);
+                                editor.remove("weather");   //除去V1.0数据
+                                editor.apply();
+                                mWeatherId = weather.basic.cityName;
+                                //展示天气数据
+                                showWeatherInfo(weather);
+                            }else{
+                                Toast.makeText(WeatherActivity.this,
+                                        "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                            }
+                            swipeRefreshLayout.setRefreshing(false);
                         }
-                        swipeRefreshLayout.setRefreshing(false);
-                    }
-                });
-            }
-        });
-        loadBgPic();    //更新天气背景图
+                    });
+                }
+            });
+            loadBgPic();    //更新天气背景图
+        }else{
+            Toast.makeText(WeatherActivity.this,
+                    "请连接网络后重试",Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
     }
 
     /**
@@ -296,5 +313,22 @@ public class WeatherActivity extends AppCompatActivity {
         //启动自动更新服务
         Intent intent = new Intent(this, AutoUpdateService.class);
         startService(intent);
+    }
+
+    /**
+     * 判断是否有网络连接
+     * @param context
+     * @return
+     */
+    public static boolean isNetworkConnected(Context context) {
+        if (context != null) {
+            ConnectivityManager mConnectivityManager = (ConnectivityManager) context
+                    .getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo mNetworkInfo = mConnectivityManager.getActiveNetworkInfo();
+            if (mNetworkInfo != null) {
+                return mNetworkInfo.isAvailable();
+            }
+        }
+        return false;
     }
 }
