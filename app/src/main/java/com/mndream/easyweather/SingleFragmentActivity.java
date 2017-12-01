@@ -24,7 +24,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity{
         setContentView(R.layout.activity_fragment);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if(prefs.getString("weather6",null) != null){
+        if(prefs.getString("weather6",null) != null && createFragment().getClass().equals(ChooseAreaFragment.class)){
             Intent intent = new Intent(this,WeatherActivity.class);
             startActivity(intent);
             finish();
