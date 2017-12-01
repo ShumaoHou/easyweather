@@ -88,9 +88,10 @@ public class ChooseAreaFragment extends Fragment {
                     } else if(getActivity() instanceof WeatherActivity) {
                         //当前活动为WeatherActivity，即已经选择过城市，侧边滑出选择
                         WeatherActivity activity = (WeatherActivity) getActivity();
-                        activity.drawerLayout.closeDrawers();
-                        activity.swipeRefreshLayout.setRefreshing(true);
-                        activity.requestWeather(weatherId);
+                        WeatherFragment fragment= (WeatherFragment) activity.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                        fragment.drawerLayout.closeDrawers();
+                        fragment.swipeRefreshLayout.setRefreshing(true);
+                        fragment.requestWeather(weatherId);
                     }
 
                 }
