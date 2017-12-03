@@ -12,10 +12,11 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="15dp">
+        android:layout_marginTop="15dp"
+        android:layout_marginStart="15dp">
 
         <TextView
-            android:layout_weight="1.5"
+            android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast"
@@ -25,7 +26,7 @@
             />
 
         <TextView
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_min"
@@ -34,7 +35,7 @@
             android:gravity="center"/>
 
         <TextView
-            android:layout_weight="1"
+            android:layout_weight="0.5"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_max"
@@ -46,16 +47,16 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/show_forecast_cond_d"
+            android:text="@string/show_forecast_cond"
             android:textColor="@color/lightText"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>
 
         <TextView
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/show_forecast_cond_n"
+            android:text="@string/show_forecast_wind"
             android:textColor="@color/lightText"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>

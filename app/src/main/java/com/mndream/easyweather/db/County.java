@@ -1,9 +1,6 @@
 package com.mndream.easyweather.db;
 
-import com.raizlabs.android.dbflow.annotation.Column;
-import com.raizlabs.android.dbflow.annotation.PrimaryKey;
-import com.raizlabs.android.dbflow.annotation.Table;
-import com.raizlabs.android.dbflow.structure.BaseModel;
+import org.litepal.crud.DataSupport;
 
 
 /**
@@ -11,23 +8,21 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
  * 数据库映射对象，县
  */
 
-@Table(database = WeatherDatabase.class)
-public class County extends BaseModel {
+public class County extends DataSupport {
 
-    @PrimaryKey(autoincrement = true)
-    private long id;
+    private int id;
 
-    @Column
     private String name;   //名称
 
-    @Column
     private String city;    //对应所属城市
+
+    private String weaid;    //对应天气代码
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -46,4 +41,13 @@ public class County extends BaseModel {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getWeaid() {
+        return weaid;
+    }
+
+    public void setWeaid(String weaid) {
+        this.weaid = weaid;
+    }
+
 }

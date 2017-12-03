@@ -14,15 +14,11 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.mndream.easyweather.db.City;
-import com.mndream.easyweather.db.City_Table;
 import com.mndream.easyweather.db.County;
-import com.mndream.easyweather.db.County_Table;
 import com.mndream.easyweather.db.Province;
 import com.mndream.easyweather.util.Utility;
-import com.raizlabs.android.dbflow.sql.language.SQLite;
-
+import org.litepal.crud.DataSupport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -78,7 +74,7 @@ public class ChooseAreaFragment extends Fragment {
                     mSelectedCity = mCityList.get(i);
                     queryCounties();
                 }else if(mCurrentLevel == LEVEL_COUNTY){
-                    String weatherId = mCountyList.get(i).getName();
+                    String weatherId = mCountyList.get(i).getWeaid();
                     if(getActivity() instanceof MainActivity){
                         //当前活动为MainActivity，即从未选择过城市
                         Intent intent = new Intent(getActivity(),WeatherActivity.class);
@@ -108,7 +104,7 @@ public class ChooseAreaFragment extends Fragment {
             }
         });
         try {
-            InputStream is = getActivity().getAssets().open("list_weather.txt");
+            InputStream is = getActivity().getAssets().open("list_weather2.txt");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -124,10 +120,9 @@ public class ChooseAreaFragment extends Fragment {
      * 查询全国所有省份，优先从数据库中查询，如果没有查询到，再从服务器上查询
      */
     private void queryProvinces() {
-        mTitleText.setText("中国");
+        mTitleText.setText("选择地区");
         mBackButton.setVisibility(View.GONE);
-//        mProvinceList = DataSupport.findAll(Province.class);    //从数据库查询省份数据
-        mProvinceList = SQLite.select().from(Province.class).queryList();
+        mProvinceList = DataSupport.findAll(Province.class);    //从数据库查询省份数据
         if(mProvinceList.size() > 0){   //首先查询本地数据库
             dataList.clear();       //列表数据源清空
             for(Province province: mProvinceList){
@@ -146,12 +141,9 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCities() {
         mTitleText.setText(mSelectedProvince.getName());
         mBackButton.setVisibility(View.VISIBLE);        //显示返回按钮
-//        mCityList = DataSupport
-//                .where("province = ?",String.valueOf(mSelectedProvince.getName()))
-//                .find(City.class);      //数据库查询对应省份下的城市
-        mCityList= SQLite.select().from(City.class)
-                .where(City_Table.province.eq(String.valueOf(mSelectedProvince.getName())))
-                .queryList();
+        mCityList= DataSupport
+                .where("province = ?",String.valueOf(mSelectedProvince.getName()))
+                .find(City.class);      //数据库查询对应省份下的城市
         if(mCityList.size()>0){
             dataList.clear();
             for(City city : mCityList){
@@ -171,12 +163,9 @@ public class ChooseAreaFragment extends Fragment {
     private void queryCounties() {
         mTitleText.setText(mSelectedCity.getName());
         mBackButton.setVisibility(View.VISIBLE);
-//        mCountyList = DataSupport
-//                .where("city = ?",String.valueOf(mSelectedCity.getName()))
-//                .find(County.class);
-        mCountyList = SQLite.select().from(County.class)
-                .where(County_Table.city.eq(String.valueOf(mSelectedCity.getName())))
-                .queryList();
+        mCountyList = DataSupport
+                .where("city = ?",String.valueOf(mSelectedCity.getName()))
+                .find(County.class);
         if(mCountyList.size() > 0){
             dataList.clear();
             for(County county : mCountyList){

@@ -8,19 +8,24 @@ import com.google.gson.annotations.SerializedName;
  */
 
 public class Forecast {
+    public String weaid;
 
+    public String citynm;     //城市名
+
+    @SerializedName("days")
     public String date;     //预报日期
 
-    @SerializedName("tmp_max")
-    public String max;          //最高气温
+    public String week;     //星期数
 
-    @SerializedName("tmp_min")
-    public String min;          //最低气温
+    public String temp_high;          //最低气温
 
-    @SerializedName("cond_txt_d")
-    public String conditionDay; //白天天气状况
+    public String temp_low;          //最低气温
 
-    @SerializedName("cond_txt_n")
-    public String conditionNight; //晚间天气状况
+    @SerializedName("weather")
+    public String condition; //天气状况
+
+    public String wind;         //风向
+
+    public String winp;         //风力
 
 }

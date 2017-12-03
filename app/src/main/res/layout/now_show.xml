@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:layout_margin="15dp"
     android:background="@color/show50">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
+    <TableRow
         android:layout_margin="15dp">
+        <!--湿度-->
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -21,14 +18,64 @@
                 android:layout_width="@dimen/now_icon_size"
                 android:layout_height="@dimen/now_icon_size"
                 android:background="@drawable/now_hum" />
-            <TextView
-                android:id="@+id/now_1_txt"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"
+                    android:text="湿度"/>
+                <TextView
+                    android:id="@+id/now_1_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"/>
+            </LinearLayout>
+
         </LinearLayout>
+        <!--温度-->
+        <LinearLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="@dimen/now_icon_size"
+                android:background="@drawable/now_tmp"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"
+                    android:text="温度"/>
+                <TextView
+                    android:id="@+id/now_2_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"/>
+            </LinearLayout>
+        </LinearLayout>
+    </TableRow>
+
+    <TableRow
+        android:layout_margin="15dp">
+        <!--风向-->
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -38,60 +85,28 @@
                 android:layout_width="@dimen/now_icon_size"
                 android:layout_height="@dimen/now_icon_size"
                 android:background="@drawable/now_wind_dir"/>
-            <TextView
-                android:id="@+id/now_2_txt"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"
+                    android:text="风向"/>
+                <TextView
+                    android:id="@+id/now_3_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"/>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="15dp">
-        <LinearLayout
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_wind_sc"/>
-            <TextView
-                android:id="@+id/now_3_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_wind_spd"/>
-            <TextView
-                android:id="@+id/now_4_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
-        </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="15dp">
+        <!--风力-->
         <LinearLayout
             android:layout_weight="1"
             android:layout_width="0dp"
@@ -100,73 +115,64 @@
             <ImageView
                 android:layout_width="@dimen/now_icon_size"
                 android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_pres"/>
+                android:background="@drawable/now_wind_sc"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="20dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"
+                    android:text="风力"/>
+                <TextView
+                    android:id="@+id/now_4_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textColor="@color/lightText"
+                    android:textSize="@dimen/now_txt"/>
+            </LinearLayout>
+        </LinearLayout>
+    </TableRow>
+
+    <!--空气质量-->
+    <LinearLayout
+        android:id="@+id/now_aqi"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="15dp">
+        <ImageView
+            android:layout_width="@dimen/now_icon_size"
+            android:layout_height="@dimen/now_icon_size"
+            android:background="@drawable/now_pres"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp">
             <TextView
                 android:id="@+id/now_5_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:textColor="@color/lightText"
                 android:textSize="@dimen/now_txt"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="33dp"
-                android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_pcpn"/>
             <TextView
                 android:id="@+id/now_6_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:textColor="@color/lightText"
                 android:textSize="@dimen/now_txt"/>
         </LinearLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="15dp">
-        <LinearLayout
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="@dimen/now_icon_size"
-                android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_vis"/>
-            <TextView
-                android:id="@+id/now_7_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-            <ImageView
-                android:layout_width="@dimen/now_icon_size"
-                android:layout_height="@dimen/now_icon_size"
-                android:background="@drawable/now_cloud"/>
-            <TextView
-                android:id="@+id/now_8_txt"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:textColor="@color/lightText"
-                android:textSize="@dimen/now_txt"/>
-        </LinearLayout>
+
     </LinearLayout>
 
-</LinearLayout>
+
+
+</TableLayout>

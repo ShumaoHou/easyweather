@@ -1,25 +1,17 @@
 package com.mndream.easyweather.gson;
 
-import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
-
 /**
- * Created by Administrator on 2017/11/16.
- * 天气总类
+ * Created by Administrator on 2017/12/1.
+ * 天气信息总类
+ * 便于prefs存储
  */
 
 public class Weather {
 
-    public String status;               //请求结果
+    public WeatherToday today ;
 
-    public Basic basic;                 //地区名
+    public WeatherFuture future ;
 
-    public Update update;               //更新时间
-
-    public Now now;                     //实况天气
-
-    @SerializedName("daily_forecast")
-    public List<Forecast> forecastList; //未来几天天气状况
+    public WeatherPM25 pm25 ;
 
 }

@@ -25,6 +25,9 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.mndream.easyweather.gson.Forecast;
 import com.mndream.easyweather.gson.Weather;
+import com.mndream.easyweather.gson.WeatherFuture;
+import com.mndream.easyweather.gson.WeatherPM25;
+import com.mndream.easyweather.gson.WeatherToday;
 import com.mndream.easyweather.service.AutoUpdateService;
 import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
@@ -42,27 +45,27 @@ import okhttp3.Response;
  */
 
 public class WeatherFragment extends Fragment{
+    private final String SIGN = "59e4d7bda830fa4c19bd86b58f3856ba";
+    private final String APP_KEY = "30131";
 
     private String mWeatherId;
+    private Weather weather = new Weather();
 
     public SwipeRefreshLayout swipeRefreshLayout;
     public DrawerLayout drawerLayout;
     private ImageView weatherBgPic;
     private ScrollView weatherLayout;
     private TextView titleCity;
-    private TextView titleUpdateTime;
+    private TextView titleDate;
     private TextView nowDegreeText;
     private TextView nowConditionText;
-    private TextView nowMinMax;
-    private TextView nowFeelingText;
     private TextView now1txt;
     private TextView now2txt;
     private TextView now3txt;
     private TextView now4txt;
     private TextView now5txt;
     private TextView now6txt;
-    private TextView now7txt;
-    private TextView now8txt;
+    private LinearLayout nowAqi;
     private LinearLayout forecastLayout;
     private Button titleCityBtn;
 
@@ -75,9 +78,6 @@ public class WeatherFragment extends Fragment{
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             //透明导航栏
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
-//            View decorView = getWindow().getDecorView();
-//            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-//            getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
 
     }
@@ -91,19 +91,16 @@ public class WeatherFragment extends Fragment{
         weatherBgPic = v.findViewById(R.id.weather_bg_pic);
         weatherLayout = v.findViewById(R.id.weather_layout);
         titleCity = v.findViewById(R.id.title_city);
-        titleUpdateTime = v.findViewById(R.id.title_update_time);
+        titleDate = v.findViewById(R.id.title_date);
         nowDegreeText = v.findViewById(R.id.degree_text);
         nowConditionText = v.findViewById(R.id.weather_info_text);
-        nowMinMax = v.findViewById(R.id.now_min_max);
-        nowFeelingText = v.findViewById(R.id.now_feeling);
         now1txt = v.findViewById(R.id.now_1_txt);
         now2txt = v.findViewById(R.id.now_2_txt);
         now3txt = v.findViewById(R.id.now_3_txt);
         now4txt = v.findViewById(R.id.now_4_txt);
         now5txt = v.findViewById(R.id.now_5_txt);
         now6txt = v.findViewById(R.id.now_6_txt);
-        now7txt = v.findViewById(R.id.now_7_txt);
-        now8txt = v.findViewById(R.id.now_8_txt);
+        nowAqi = v.findViewById(R.id.now_aqi);
         forecastLayout = v.findViewById(R.id.forecast_layout);
         swipeRefreshLayout = v.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
@@ -129,11 +126,18 @@ public class WeatherFragment extends Fragment{
         });
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String weatherString = prefs.getString("weather6",null);
-        if(weatherString != null){
+        String weatherT = prefs.getString("weather1.2t",null);
+        String weatherF = prefs.getString("weather1.2f",null);
+        String weatherP = prefs.getString("weather1.2p",null);
+        if(weatherT != null && weatherF != null && weatherP != null){
             //有缓存则直接解析天气数据
-            Weather weather = Utility.handleWeatherResponse(weatherString);
-            mWeatherId = weather.basic.cityName;
+            WeatherFuture weatherFuture = Utility.handleWeatherFutureResponse(weatherF);
+            WeatherToday weatherToday = Utility.handleWeatherTodayResponse(weatherT);
+            WeatherPM25 weatherPM25 = Utility.handleWeatherPM25Response(weatherP);
+            weather.today = weatherToday;
+            weather.pm25 = weatherPM25;
+            weather.future = weatherFuture;
+            mWeatherId = weatherToday.result.weaid;
             showWeatherInfo(weather);
         }else{
             //无缓存则去服务器查询天气
@@ -193,40 +197,44 @@ public class WeatherFragment extends Fragment{
      */
     public void requestWeather(final String weatherId) {
         if(WeatherActivity.isNetworkConnected(MyApplication.getContext())){
-            String WEATHER_KEY = "f9b22264e8b040b4ad2bade41c6b53d0";
-            String weatherUrl = "https://free-api.heweather.com/s6/weather?key=" + WEATHER_KEY + "&location=" + weatherId;
+            //请求实时天气
+            String weatherUrl = "http://api.k780.com/?app=weather.today&weaid=" + weatherId +
+                    "&appkey=" + APP_KEY +
+                    "&sign=" + SIGN +
+                    "&format=json";
             HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+                String errorText = "获取实时天气信息失败";
                 @Override
                 public void onFailure(Call call, IOException e) {
                     Toast.makeText(MyApplication.getContext(),
-                            "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                            errorText,Toast.LENGTH_SHORT).show();
                     swipeRefreshLayout.setRefreshing(false);
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     final String responseText = response.body().string();
-                    final Weather weather = Utility.handleWeatherResponse(responseText);
+                    final WeatherToday weatherToday = Utility.handleWeatherTodayResponse(responseText);
 
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if(weather != null && "ok".equals(weather.status)){
+                            if(weatherToday != null && "1".equals(weatherToday.success)){
+                                mWeatherId = weatherId; //更新id
                                 //将天气数据缓存
+                                weather.today = weatherToday;
                                 SharedPreferences.Editor editor = PreferenceManager
                                         .getDefaultSharedPreferences(getActivity())
                                         .edit();
-                                editor.putString("weather6",responseText);
+                                editor.putString("weather1.2t",responseText);
                                 editor.remove("weather");   //除去V1.0数据
+                                editor.remove("weather6");   //除去V1.1数据
                                 editor.apply();
-                                mWeatherId = weather.basic.cityName;
-                                //展示天气数据
-                                showWeatherInfo(weather);
+                                requestFuture(weatherId);
                             }else{
                                 Toast.makeText(getActivity(),
-                                        "获取天气信息失败",Toast.LENGTH_SHORT).show();
+                                        errorText,Toast.LENGTH_SHORT).show();
                             }
-                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
                 }
@@ -239,83 +247,159 @@ public class WeatherFragment extends Fragment{
         }
 
     }
+    //请求天气预报
+    public void requestFuture(final String weatherId){
 
+        String weatherUrl = "http://api.k780.com/?app=weather.future&weaid=" + weatherId +
+                "&appkey=" + APP_KEY +
+                "&sign=" + SIGN +
+                "&format=json";
+        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+            String errorText = "获取天气预报信息失败";
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Toast.makeText(MyApplication.getContext(),
+                        errorText,Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                final WeatherFuture weatherFuture = Utility.handleWeatherFutureResponse(responseText);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(weatherFuture != null && "1".equals(weatherFuture.success)){
+                            //将天气数据缓存
+                            weather.future = weatherFuture;
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("weather1.2f",responseText);
+                            editor.apply();
+                            requestPM25(weatherId);
+                        }else{
+                            Toast.makeText(getActivity(),
+                                    errorText,Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    //请求PM25数据
+    public void requestPM25(final String weatherId){
+
+        String weatherUrl = "http://api.k780.com/?app=weather.pm25&weaid=" + weatherId +
+                "&appkey=" + APP_KEY +
+                "&sign=" + SIGN +
+                "&format=json";
+        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+            String errorText = "获取PM25信息失败";
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Toast.makeText(MyApplication.getContext(),
+                        errorText,Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                final WeatherPM25 weatherPM25 = Utility.handleWeatherPM25Response(responseText);
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(weatherPM25 != null && "1".equals(weatherPM25.success)){
+                            //将天气数据缓存
+                            weather.pm25 = weatherPM25;
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("weather1.2p",responseText);
+                            editor.apply();
+                            //展示天气数据
+                            showWeatherInfo(weather);
+                        }else{
+                            Toast.makeText(getActivity(),
+                                    errorText,Toast.LENGTH_SHORT).show();
+                        }
+                        swipeRefreshLayout.setRefreshing(false);
+                    }
+                });
+            }
+        });
+    }
     /**
      * 处理并展示Weather实体类中的数据
      */
     private void showWeatherInfo(Weather weather) {
 
-        String cityName = weather.basic.cityName;   //城市名
+        String cityName = weather.today.result.citynm;   //城市名
         titleCity.setText(cityName);
 
-        String updateTime = "更新于:" + weather.update.updateTime.split(" ")[1];  //更新时间
-        titleUpdateTime.setText(updateTime);
+        String updateTime = weather.today.result.date + "\n" + weather.today.result.week;  //时间
+        titleDate.setText(updateTime);
 
-        String degree = weather.now.temperature + "℃";  //温度
+        String degree =  weather.today.result.temp_curr + "℃";  //温度
         nowDegreeText.setText(degree);
 
-        String conditionInfo = weather.now.condition;     //天气情况
+        String conditionInfo = weather.today.result.condition;     //天气情况
         nowConditionText.setText(conditionInfo);
 
-        String nowMinMaxText = weather.forecastList.get(0).min+ "°/" + weather.forecastList.get(0).max + "°";   //温度范围
-        nowMinMax.setText(nowMinMaxText);
-
-        String feeling = "体感" + weather.now.feeling + "°";   //体感温度
-        nowFeelingText.setText(feeling);
-
-        String hum = "相对湿度\n" + weather.now.hum + "%";           //相对湿度
+        String hum = weather.today.result.humidity ;        //实时湿度
         now1txt.setText(hum);
 
-        String windDir = "风向\n" + weather.now.windDir;   //风向
-        now2txt.setText(windDir);
+        String nowMinMaxText =weather.today.result.temp_low + "°～" + weather.today.result.temp_high + "°";   //温度范围
+        now2txt.setText(nowMinMaxText);
 
-        String windSc = "风力\n" + weather.now.windSc + "级";     //风力
-        now3txt.setText(windSc);
+        String wind = weather.today.result.wind;   //风向
+        now3txt.setText(wind);
 
-        String windSpd = "风速\n" + weather.now.windSpd +"km/h";   //风速
-        now4txt.setText(windSpd);
+        String winp =  weather.today.result.winp;     //风力
+        now4txt.setText(winp);
 
-        String pres = "大气压强\n" + weather.now.pres + "hPa";         //大气压强
-        now5txt.setText(pres);
+        String aqi = "空气质量："  + weather.pm25.result.aqi + "    " + weather.pm25.result.aqi_levid +"级    " + weather.pm25.result.aqi_levnm;         //aqi
+        now5txt.setText(aqi);
 
-        String pcpn = "降水量\n" + weather.now.pcpn + "mm";         //降水量
-        now6txt.setText(pcpn);
+        String remark = "运动建议：" + weather.pm25.result.aqi_remark;
+        now6txt.setText(remark);
 
-        String vis = "能见度\n" + weather.now.vis + "km";           //能见度
-        now7txt.setText(vis);
-
-        String cloud = "云量\n" + weather.now.cloud;       //云量
-        now8txt.setText(cloud);
-
+        if("-".equals(weather.pm25.result.aqi_levnm)){
+            nowAqi.setVisibility(View.GONE);
+        }else{
+            nowAqi.setVisibility(View.VISIBLE);
+        }
         //设置预报部分
-        String[] dateCall = new String[]{"今天","明天","后天","大后天"};
         forecastLayout.removeAllViews();
-        List<Forecast> forecastList = weather.forecastList;
+        List<Forecast> forecastList = weather.future.forecastList;
         for(int i = 1; i<forecastList.size();i++){
             Forecast forecast = forecastList.get(i);
             //每个预报的天气项
             View view = LayoutInflater.from(getActivity())
                     .inflate(R.layout.forecast_item, forecastLayout, false);
-            TextView dateText = view.findViewById(R.id.data_text);
-            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2];
-            if(i<=3){
-                dateString += "\t\t" + dateCall[i];
-            }
+            TextView dateText = view.findViewById(R.id.date_text);
+            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2] + "\n" + forecast.week;
             dateText.setText(dateString);
-//            TextView infoText = view.findViewById(R.id.info_text);
-//            infoText.setText(forecast.conditionDay + " " + forecast.conditionNight);
+
             TextView maxText = view.findViewById(R.id.max_text);
-            String maxString = forecast.max + "℃";
+            String maxString = forecast.temp_high + "℃";
             maxText.setText(maxString);
+
             TextView minText = view.findViewById(R.id.min_text);
-            String minString = forecast.min + "℃";
+            String minString = forecast.temp_low + "℃";
             minText.setText(minString);
-            TextView condDText = view.findViewById(R.id.cond_d_text);
-            String condDString = forecast.conditionDay;
-            condDText.setText(condDString);
-            TextView condNText = view.findViewById(R.id.cond_n_text);
-            String condNString = forecast.conditionNight;
-            condNText.setText(condNString);
+
+
+            TextView condText = view.findViewById(R.id.cond_text);
+            condText.setText(forecast.condition);
+
+            TextView windText = view.findViewById(R.id.wind_text);
+            String windString = forecast.winp + "\n"+ forecast.wind;
+            windText.setText(windString);
+
             forecastLayout.addView(view);
         }
 

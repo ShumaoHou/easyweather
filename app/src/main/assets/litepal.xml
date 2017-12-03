@@ -1,0 +1,11 @@
+<Litepal>
+    <dbname value="WeatherDatabase"/>
+
+    <version value="2"/>
+
+    <list>
+        <mapping class="com.mndream.easyweather.db.Province"/>
+        <mapping class="com.mndream.easyweather.db.City"/>
+        <mapping class="com.mndream.easyweather.db.County"/>
+    </list>
+</Litepal>

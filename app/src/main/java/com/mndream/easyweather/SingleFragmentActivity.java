@@ -23,21 +23,25 @@ public abstract class SingleFragmentActivity extends FragmentActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
 
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        if(prefs.getString("weather6",null) != null && createFragment().getClass().equals(ChooseAreaFragment.class)){
+        String weatherT = prefs.getString("weather1.2t",null);
+        String weatherF = prefs.getString("weather1.2f",null);
+        String weatherP = prefs.getString("weather1.2p",null);
+        if(weatherT != null && weatherF != null && weatherP != null && fragment.getClass().equals(ChooseAreaFragment.class)){
             Intent intent = new Intent(this,WeatherActivity.class);
             startActivity(intent);
             finish();
-        }else{
-            FragmentManager fm = getSupportFragmentManager();
-            Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-
-            if(fragment == null){
-                fragment = createFragment();
-                fm.beginTransaction()
-                        .add(R.id.fragment_container,fragment)
-                        .commit();
-            }
         }
+
+        if(fragment == null){
+            fragment = createFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragment_container,fragment)
+                    .commit();
+        }
+
     }
 }

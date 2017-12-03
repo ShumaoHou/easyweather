@@ -21,19 +21,5 @@
         android:layout_gravity="end"
         android:textColor="@color/lightText"
         android:textSize="@dimen/segment_title"/>
-    <TextView
-        android:id="@+id/now_min_max"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="@color/lightText"
-        android:textSize="@dimen/segment_title"/>
-    <TextView
-        android:id="@+id/now_feeling"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="@color/lightText"
-        android:textSize="@dimen/segment_title"/>
 
 </LinearLayout>

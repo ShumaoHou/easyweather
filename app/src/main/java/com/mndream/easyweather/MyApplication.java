@@ -1,23 +1,23 @@
 package com.mndream.easyweather;
 
-import android.app.Application;
 import android.content.Context;
-
-import com.raizlabs.android.dbflow.config.FlowManager;
-
 import org.litepal.LitePal;
+import org.litepal.LitePalApplication;
 
 /**
  * Created by Administrator on 2017/11/15.
+ *
  */
 
-public class MyApplication extends Application {
+public class MyApplication extends LitePalApplication{
     private static Context sContext;
 
     @Override
     public void onCreate() {
         sContext = getApplicationContext();
-        FlowManager.init(this);
+        //数据库初始化
+        LitePal.initialize(sContext);
+//        FlowManager.init(this);
     }
 
     public static Context getContext(){

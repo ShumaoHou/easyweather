@@ -21,16 +21,17 @@
         android:layout_marginLeft="5dp"
         android:layout_centerVertical="true"
         android:textColor="@color/lightText"
-        android:textSize="@dimen/segment_title"/>
+        android:textSize="18sp"/>
 
     <TextView
-        android:id="@+id/title_update_time"
+        android:id="@+id/title_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
+        android:gravity="center"
         android:textColor="@color/lightText"
-        android:textSize="@dimen/segment_title"/>
+        android:textSize="16dp"/>
 
 </RelativeLayout>

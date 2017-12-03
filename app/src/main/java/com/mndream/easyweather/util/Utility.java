@@ -5,8 +5,10 @@ import android.text.TextUtils;
 import com.mndream.easyweather.db.City;
 import com.mndream.easyweather.db.County;
 import com.mndream.easyweather.db.Province;
-import com.mndream.easyweather.gson.Weather;
+import com.mndream.easyweather.gson.WeatherFuture;
 import com.google.gson.Gson;
+import com.mndream.easyweather.gson.WeatherPM25;
+import com.mndream.easyweather.gson.WeatherToday;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,13 +25,33 @@ import java.util.List;
 public class Utility {
 
     /**
-     * 将返回的JSON数据解析成Weather实体类
+     * 将返回的JSON数据解析成WeatherFuture实体类
      */
-    public static Weather handleWeatherResponse(String response){
+    public static WeatherFuture handleWeatherFutureResponse(String response){
         try {
-            JSONArray jsonArray = new JSONObject(response).getJSONArray("HeWeather6");
-            String weatherContent = jsonArray.getJSONObject(0).toString();  //获取Weather对应JSON数据
-            return new Gson().fromJson(weatherContent,Weather.class);       //使用Gson返回对应的对象
+            return new Gson().fromJson(response,WeatherFuture.class);       //使用Gson返回对应的对象
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 将返回的JSON数据解析成WeatherToday实体类
+     */
+    public static WeatherToday handleWeatherTodayResponse(String response){
+        try {
+            return new Gson().fromJson(response,WeatherToday.class);       //使用Gson返回对应的对象
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    /**
+     * 将返回的JSON数据解析成WeatherPM25实体类
+     */
+    public static WeatherPM25 handleWeatherPM25Response(String response){
+        try {
+            return new Gson().fromJson(response,WeatherPM25.class);       //使用Gson返回对应的对象
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -116,10 +138,12 @@ public class Utility {
                     JSONObject countyObject = jsonArray.getJSONObject(i);
                     String countyName = countyObject.getString("county"); //逐个获取相应县名
                     String city = countyObject.getString("city");
+                    String weaid = countyObject.getString("weaid");
                     if(cityName.equals(city)){
                         County county = new County();
                         county.setName(countyName);
                         county.setCity(cityName);
+                        county.setWeaid(weaid);
                         county.save();
                     }
                 }
