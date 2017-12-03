@@ -79,6 +79,12 @@ public class WeatherFragment extends Fragment{
             //透明导航栏
             getActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
         }
+        //首次启动设置
+        SharedPreferences.Editor editor = PreferenceManager
+                .getDefaultSharedPreferences(getActivity())
+                .edit();
+        editor.putBoolean("first_start",false);
+        editor.apply();
 
     }
 
