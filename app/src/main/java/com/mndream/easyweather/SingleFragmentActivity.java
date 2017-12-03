@@ -26,6 +26,13 @@ public abstract class SingleFragmentActivity extends FragmentActivity{
         FragmentManager fm = getSupportFragmentManager();
         Fragment fragment = fm.findFragmentById(R.id.fragment_container);
 
+        if(fragment == null){
+            fragment = createFragment();
+            fm.beginTransaction()
+                    .add(R.id.fragment_container,fragment)
+                    .commit();
+        }
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherT = prefs.getString("weather1.2t",null);
         String weatherF = prefs.getString("weather1.2f",null);
@@ -35,13 +42,5 @@ public abstract class SingleFragmentActivity extends FragmentActivity{
             startActivity(intent);
             finish();
         }
-
-        if(fragment == null){
-            fragment = createFragment();
-            fm.beginTransaction()
-                    .add(R.id.fragment_container,fragment)
-                    .commit();
-        }
-
     }
 }
