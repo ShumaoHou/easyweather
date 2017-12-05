@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--天气-->
     <dimen name="segment_title">20sp</dimen>
     <dimen name="now_icon_size">30dp</dimen>
     <dimen name="now_txt">15sp</dimen>
+    <!--设置-->
+    <dimen name="settings_item_height">64dp</dimen>
+    <dimen name="settings_item_margin">5dp</dimen>
+    <dimen name="settings_item_img">36dp</dimen>
+    <dimen name="settings_item_title">16sp</dimen>
+    <dimen name="settings_item_details">12sp</dimen>
 </resources>

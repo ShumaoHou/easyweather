@@ -13,4 +13,5 @@ public class MainActivity extends SingleFragmentActivity{
         return new ChooseAreaFragment();
     }
 
+
 }

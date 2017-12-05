@@ -6,14 +6,25 @@ android {
         applicationId "com.mndream.easyweather"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.2"
+        versionCode 4
+        versionName "1.2.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main {
+            res.srcDirs =
+                    [
+                            'src/main/res',
+                            'src/main/res/layout/weather',
+                            'src/main/res/layout/choose_area',
+                            'src/main/res/layout/settings'
+                    ]
         }
     }
 }
@@ -31,4 +42,15 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'com.android.support:support-v4:26.1.0'
+    compile 'com.zhihu.android:matisse:0.4.3'
+}
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                details.useVersion '26.1.0'
+            }
+        }
+    }
 }

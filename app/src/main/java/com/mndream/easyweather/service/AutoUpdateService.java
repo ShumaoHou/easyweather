@@ -57,23 +57,27 @@ public class AutoUpdateService extends Service {
     }
 
     private void updateBgPic() {
-        String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
-        HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-            }
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Boolean isDIY = prefs.getBoolean("bg_pic_is_diy",false);//是否自定义背景
+        if(!isDIY){
+            String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
+            HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final String bgPic = Utility.handleBgPic(response.body().string());;
-                SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(AutoUpdateService.this)
-                        .edit();
-                editor.putString("bg_pic", bgPic);
-                editor.apply();
-            }
-        });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    final String bgPic = Utility.handleBgPic(response.body().string());;
+                    SharedPreferences.Editor editor = PreferenceManager
+                            .getDefaultSharedPreferences(AutoUpdateService.this)
+                            .edit();
+                    editor.putString("bg_pic", bgPic);
+                    editor.apply();
+                }
+            });
+        }
     }
 
     /**

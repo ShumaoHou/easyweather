@@ -2,6 +2,7 @@ package com.mndream.easyweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,7 +12,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -40,9 +44,10 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 /**
- * Created by Administrator on 2017/12/1.
- *
- */
+*   @app    易天气
+*   @author mndream
+*   @date   2017/12/5
+**/
 
 public class WeatherFragment extends Fragment{
     private final String SIGN = "59e4d7bda830fa4c19bd86b58f3856ba";
@@ -53,6 +58,7 @@ public class WeatherFragment extends Fragment{
 
     public SwipeRefreshLayout swipeRefreshLayout;
     public DrawerLayout drawerLayout;
+    private Toolbar toolbar;
     private ImageView weatherBgPic;
     private ScrollView weatherLayout;
     private TextView titleCity;
@@ -88,16 +94,22 @@ public class WeatherFragment extends Fragment{
 
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadBgPic();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-       View v = inflater.inflate(R.layout.activity_weather,container,false);
+       View v = inflater.inflate(R.layout.fragment_weather,container,false);
         //初始化控件
         drawerLayout = v.findViewById(R.id.drawer_layout);
         weatherBgPic = v.findViewById(R.id.weather_bg_pic);
         weatherLayout = v.findViewById(R.id.weather_layout);
-        titleCity = v.findViewById(R.id.title_city);
-        titleDate = v.findViewById(R.id.title_date);
+        titleCity = v.findViewById(R.id.weather_toolbar_city_txt);
+        titleDate = v.findViewById(R.id.weather_toolbar_title_date_txt);
         nowDegreeText = v.findViewById(R.id.degree_text);
         nowConditionText = v.findViewById(R.id.weather_info_text);
         now1txt = v.findViewById(R.id.now_1_txt);
@@ -117,7 +129,23 @@ public class WeatherFragment extends Fragment{
             }
         });
 
-        titleCityBtn = v.findViewById(R.id.title_city_btn);
+        toolbar = v.findViewById(R.id.weather_toolbar);
+        toolbar.inflateMenu(R.menu.weather_toolbar);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch(item.getItemId()){
+                    case R.id.weather_settings_btn:{
+                        Intent settingsIntent = new Intent(getActivity(),SettingsActivity.class);
+                        startActivity(settingsIntent);
+                        break;
+                    }
+                }
+                return  true;
+            }
+        });
+
+        titleCityBtn = v.findViewById(R.id.weather_toolbar_city_btn);
         titleCityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -152,54 +180,81 @@ public class WeatherFragment extends Fragment{
             requestWeather(mWeatherId);
         }
         //界面初始化时设置天气背景图
-        String bgPic = prefs.getString("bg_pic",null);
-        if(bgPic != null){
-            Glide.with(this).load(bgPic).into(weatherBgPic);
+        Boolean isDIY = prefs.getBoolean("bg_pic_is_diy",false);//是否自定义背景
+        if(isDIY){
+            final Uri bgPicUri = Uri.parse( prefs.getString("bg_pic_diy",null));
+            Glide.with(getActivity()).load(bgPicUri).into(weatherBgPic);
         }else{
-            loadBgPic();
+            String bgPic = prefs.getString("bg_pic",null);//非自定义时，是否有缓存图片
+            if(bgPic != null){
+                Glide.with(this).load(bgPic).into(weatherBgPic);
+            }else{
+                loadBgPic();
+            }
         }
 
         return v;
     }
     /**
-     * 从服务器加载天气背景图片
+     * 加载天气背景图片
+     * 刷新自定义图片 或 加载每日图片
      */
     private void loadBgPic() {
-        if(WeatherActivity.isNetworkConnected(MyApplication.getContext())){
-            String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
-            HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    final String bgPic = Utility.handleBgPic(response.body().string());
-                    SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(getActivity())
-                            .edit();
-                    editor.putString("bg_pic", bgPic);
-                    editor.apply();
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Glide.with(getActivity()).load(bgPic).into(weatherBgPic);
-                        }
-                    });
-                }
-            });
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        Boolean isDIY = prefs.getBoolean("bg_pic_is_diy",false);        //是否为自定义
+        String diy = prefs.getString("bg_pic_diy",null);                //当前设定的自定义图片
+        String diy_cache = prefs.getString("bg_pic_diy_cache",null);    //自定义图片缓存
+        if(isDIY && !TextUtils.isEmpty(diy)){
+            if(!TextUtils.equals(diy,diy_cache)){//现有图片与缓存不等则刷新
+                final Uri bgPicUri = Uri.parse(diy);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(getActivity()).load(bgPicUri).into(weatherBgPic);
+                    }
+                });
+                SharedPreferences.Editor editor = PreferenceManager
+                        .getDefaultSharedPreferences(getActivity())
+                        .edit();
+                editor.putString("bg_pic_diy_cache", diy);
+                editor.apply();
+            }
         }else{
-            Toast.makeText(getActivity(),
-                    "请连接网络后重试",Toast.LENGTH_SHORT).show();
-            swipeRefreshLayout.setRefreshing(false);
-        }
+            if(WeatherActivity.isNetworkConnected(MyApplication.getContext())){
+                String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
+                HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
 
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        final String bgPic = Utility.handleBgPic(response.body().string());
+                        SharedPreferences.Editor editor = PreferenceManager
+                                .getDefaultSharedPreferences(getActivity())
+                                .edit();
+                        editor.putString("bg_pic", bgPic);
+                        editor.apply();
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Glide.with(getActivity()).load(bgPic).into(weatherBgPic);
+                            }
+                        });
+                    }
+                });
+            }else{
+                Toast.makeText(getActivity(),
+                        "请连接网络后重试",Toast.LENGTH_SHORT).show();
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        }
     }
 
     /**
      * 根据天气id请求城市天气信息
-     * @param weatherId
+     * @param weatherId 天气id
      */
     public void requestWeather(final String weatherId) {
         if(WeatherActivity.isNetworkConnected(MyApplication.getContext())){

@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast"
-            android:textColor="@color/lightText"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/segment_title"
             android:gravity="center"
             />
@@ -30,7 +30,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_min"
-            android:textColor="@color/lightText"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>
 
@@ -39,7 +39,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_max"
-            android:textColor="@color/lightText"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>
 
@@ -48,7 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_cond"
-            android:textColor="@color/lightText"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>
 
@@ -57,7 +57,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="@string/show_forecast_wind"
-            android:textColor="@color/lightText"
+            android:textColor="@color/colorWhite"
             android:textSize="@dimen/segment_title"
             android:gravity="center"/>
 

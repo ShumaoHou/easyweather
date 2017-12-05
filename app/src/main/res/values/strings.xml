@@ -10,4 +10,8 @@
     <string name="show_forecast_min">低</string>
     <string name="show_forecast_cond">天气</string>
     <string name="show_forecast_wind">风况</string>
+    <string name="toolbar_settings">设置</string>
+    <string name="settings_is_diy_details">选择一张图片作为天气界面的背景图片，刷新天气时不会改变。</string>
+    <string name="settings_is_diy_details_diy">已选择自定义图片，点击更换图片。</string>
+    <string name="settings_is_diy_title">自定义天气背景图</string>
 </resources>

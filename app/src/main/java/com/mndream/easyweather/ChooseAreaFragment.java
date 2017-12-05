@@ -52,7 +52,7 @@ public class ChooseAreaFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.choose_area,container,false);
+        View view = inflater.inflate(R.layout.fragment_choose_area,container,false);
         mTitleText =  view.findViewById(R.id.title_text);
         mBackButton =  view.findViewById(R.id.back_button);
         mListView =  view.findViewById(R.id.list_view);

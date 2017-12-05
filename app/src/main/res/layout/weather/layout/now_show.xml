@@ -27,7 +27,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"
                     android:text="湿度"/>
                 <TextView
@@ -35,7 +35,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"/>
             </LinearLayout>
 
@@ -59,7 +59,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"
                     android:text="温度"/>
                 <TextView
@@ -67,7 +67,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"/>
             </LinearLayout>
         </LinearLayout>
@@ -94,7 +94,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"
                     android:text="风向"/>
                 <TextView
@@ -102,7 +102,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"/>
             </LinearLayout>
         </LinearLayout>
@@ -125,7 +125,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"
                     android:text="风力"/>
                 <TextView
@@ -133,7 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="start"
-                    android:textColor="@color/lightText"
+                    android:textColor="@color/colorWhite"
                     android:textSize="@dimen/now_txt"/>
             </LinearLayout>
         </LinearLayout>
@@ -160,14 +160,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="@color/lightText"
+                android:textColor="@color/colorWhite"
                 android:textSize="@dimen/now_txt"/>
             <TextView
                 android:id="@+id/now_6_txt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:textColor="@color/lightText"
+                android:textColor="@color/colorWhite"
                 android:textSize="@dimen/now_txt"/>
         </LinearLayout>
 

@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- toolbar菜单样式 -->
+    <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <item name="actionOverflowButtonStyle">@style/ActionButton.Overflow.White</item>
+    </style>
+    <style name="ActionButton.Overflow.White" parent="Base.Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:overlapAnchor">false</item>
+        <item name="srcCompat">@drawable/ic_menu_overflow_setting_white</item>
+    </style>
+
+
 </resources>

@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:textColor="@color/lightText"
+        android:textColor="@color/colorWhite"
         android:textSize="60sp"
         />
     <TextView
@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end"
-        android:textColor="@color/lightText"
+        android:textColor="@color/colorWhite"
         android:textSize="@dimen/segment_title"/>
 
 </LinearLayout>
