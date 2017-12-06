@@ -30,16 +30,17 @@
         android:layout_height="match_parent">
         <LinearLayout
             android:id="@+id/settings_container"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true">
 
             <include layout="@layout/setting_is_diy"/>
-            <ImageView
-                android:id="@+id/img_set"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
 
-            </ImageView>
+            <include layout="@layout/setting_is_diy_select"/>
+
+            <include layout="@layout/setting_about"/>
+
         </LinearLayout>
     </ScrollView>
 

@@ -12,8 +12,6 @@ import android.widget.Toast;
 
 import com.mndream.easyweather.MyApplication;
 import com.mndream.easyweather.WeatherActivity;
-import com.mndream.easyweather.WeatherFragment;
-import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.gson.WeatherFuture;
 import com.mndream.easyweather.gson.WeatherPM25;
 import com.mndream.easyweather.gson.WeatherToday;

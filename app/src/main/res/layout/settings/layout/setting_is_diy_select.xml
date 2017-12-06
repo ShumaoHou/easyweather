@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/settings_is_diy_select"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/settings_item_height"
+    android:layout_marginTop="@dimen/settings_item_margin"
+    android:layout_marginStart="@dimen/settings_subitem_margin"
+    android:layout_marginEnd="@dimen/settings_subitem_margin"
+    android:background="@drawable/settings_item_selector">
+    <ImageView
+        android:id="@+id/settings_is_diy_select_img"
+        android:layout_width="@dimen/settings_item_img"
+        android:layout_height="@dimen/settings_item_img"
+        android:layout_marginStart="@dimen/settings_item_margin"
+        android:layout_gravity="center_vertical" />
+    <TextView
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/settings_item_margin"
+        android:layout_gravity="center"
+        android:text="@string/settings_is_diy_select_title"
+        android:textSize="@dimen/settings_item_title"
+        android:textColor="@color/colorBlack"/>
+</LinearLayout>

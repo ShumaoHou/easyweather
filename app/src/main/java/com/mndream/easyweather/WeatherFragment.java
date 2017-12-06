@@ -192,7 +192,6 @@ public class WeatherFragment extends Fragment{
                 loadBgPic();
             }
         }
-
         return v;
     }
     /**

@@ -3,25 +3,25 @@
     <!--按下状态-->
     <item android:state_pressed="true">
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#d2d2d2" />
+            <solid android:color="#c6c6c6" />
             <corners android:radius="5dp"/>
-            <stroke android:width="0.3dp" android:color="#000000" />
+            <!--<stroke android:width="0.3dp" android:color="#000000" />-->
         </shape>
     </item>
-    <!--聚焦状态-->
-    <item android:state_focused="true">
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#e6e6e6" />
-            <corners android:radius="5dp"/>
-            <stroke android:width="0.3dp" android:color="#000000" />
-        </shape>
-    </item>
+    <!--&lt;!&ndash;聚焦状态&ndash;&gt;-->
+    <!--<item android:state_focused="true">-->
+        <!--<shape xmlns:android="http://schemas.android.com/apk/res/android">-->
+            <!--<solid android:color="#e6e6e6" />-->
+            <!--<corners android:radius="5dp"/>-->
+            <!--<stroke android:width="0.3dp" android:color="#000000" />-->
+        <!--</shape>-->
+    <!--</item>-->
     <!--无状态-->
     <item >
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid android:color="#ececec" />
+            <solid android:color="#e6e6e6" />
             <corners android:radius="5dp"/>
-            <stroke android:width="0.3dp" android:color="#000000" />
+            <!--<stroke android:width="0.3dp" android:color="#000000" />-->
         </shape>
     </item>
 </selector>

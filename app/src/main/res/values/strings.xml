@@ -11,7 +11,25 @@
     <string name="show_forecast_cond">天气</string>
     <string name="show_forecast_wind">风况</string>
     <string name="toolbar_settings">设置</string>
-    <string name="settings_is_diy_details">选择一张图片作为天气界面的背景图片，刷新天气时不会改变。</string>
-    <string name="settings_is_diy_details_diy">已选择自定义图片，点击更换图片。</string>
+    <!--设置-->
+    <!--自定义设置-->
+    <string name="settings_is_diy_details_off">开启后，可以选择一张图片作为天气背景图片。</string>
+    <string name="settings_is_diy_details_on">关闭后，每日更新一张随机精美天气背景图片。</string>
     <string name="settings_is_diy_title">自定义天气背景图</string>
+    <string name="settings_is_diy_select_title">点击选择图片</string>
+    <!--关于-->
+    <string name="settings_about_title">关于</string>
+    <string name="settings_about_details">易天气</string>
+    <string name="toolbar_settings_about">关于</string>
+    <string name="settings_about_github_t">GitHub</string>
+    <string name="settings_about_github_a">https://github.com/mndream/easyweather</string>
+    <string name="settings_about_kuan_a">https://www.coolapk.com/apk/com.mndream.easyweather</string>
+    <string name="settings_about_kuan_t">酷安市场-易天气</string>
+    <string name="settings_about_github_ref">感谢开源项目(排名不分先后)</string>
+    <string name="settings_about_github_ref_a">LitePal\nhttps://github.com/LitePalFramework/LitePal\n
+        Matisse\nhttps://github.com/zhihu/Matisse\n
+        Glide\nhttps://github.com/bumptech/glide\n
+        Gson\nhttps://github.com/google/gson\n
+        OkHttp\nhttps://github.com/square/okhttp\n
+        SwitchButton\nhttps://github.com/kyleduo/SwitchButton\n</string>
 </resources>

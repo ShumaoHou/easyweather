@@ -7,7 +7,10 @@
     <!--设置-->
     <dimen name="settings_item_height">64dp</dimen>
     <dimen name="settings_item_margin">5dp</dimen>
+    <dimen name="settings_subitem_margin">15dp</dimen>
     <dimen name="settings_item_img">36dp</dimen>
     <dimen name="settings_item_title">16sp</dimen>
     <dimen name="settings_item_details">12sp</dimen>
+    <dimen name="settings_about_details">15sp</dimen>
+    <dimen name="settings_about_title">20sp</dimen>
 </resources>

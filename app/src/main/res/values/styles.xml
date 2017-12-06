@@ -18,6 +18,4 @@
         <item name="android:overlapAnchor">false</item>
         <item name="srcCompat">@drawable/ic_menu_overflow_setting_white</item>
     </style>
-
-
 </resources>

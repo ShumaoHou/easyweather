@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/settings_is_diy"
+    android:id="@+id/settings_about"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="@dimen/settings_item_height"
@@ -20,22 +19,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/settings_item_margin"
-            android:text="@string/settings_is_diy_title"
+            android:text="@string/settings_about_title"
             android:textSize="@dimen/settings_item_title"
             android:textColor="@color/colorBlack"/>
         <TextView
-            android:id="@+id/settings_is_diy_details"
+            android:id="@+id/settings_about_details"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/settings_item_margin"
-            android:text="@string/settings_is_diy_details_off"
+            android:text="@string/settings_about_details"
             android:textSize="@dimen/settings_item_details" />
     </LinearLayout>
-    <com.kyleduo.switchbutton.SwitchButton
-        android:id="@+id/settings_is_diy_btn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:layout_margin="@dimen/settings_item_margin"
-        app:kswTintColor="@color/colorPrimary"/>
 </LinearLayout>
