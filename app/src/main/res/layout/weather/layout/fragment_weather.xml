@@ -39,9 +39,9 @@
 
                     <include layout="@layout/now"/>
 
-                    <include layout="@layout/now_show"/>
-
                     <include layout="@layout/forecast"/>
+
+                    <include layout="@layout/now_show"/>
 
                 </LinearLayout>
 

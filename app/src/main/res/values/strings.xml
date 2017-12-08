@@ -19,7 +19,7 @@
     <string name="settings_is_diy_select_title">点击选择图片</string>
     <!--关于-->
     <string name="settings_about_title">关于</string>
-    <string name="settings_about_details">易天气</string>
+    <string name="settings_about_details">易天气v1.3.0</string>
     <string name="toolbar_settings_about">关于</string>
     <string name="settings_about_github_t">GitHub</string>
     <string name="settings_about_github_a">https://github.com/mndream/easyweather</string>
@@ -31,5 +31,6 @@
         Glide\nhttps://github.com/bumptech/glide\n
         Gson\nhttps://github.com/google/gson\n
         OkHttp\nhttps://github.com/square/okhttp\n
-        SwitchButton\nhttps://github.com/kyleduo/SwitchButton\n</string>
+        SwitchButton\nhttps://github.com/kyleduo/SwitchButton\n
+        MPAndroidChart\nhttps://github.com/PhilJay/MPAndroidChart\n</string>
 </resources>

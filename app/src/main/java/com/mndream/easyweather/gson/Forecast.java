@@ -10,8 +10,6 @@ import com.google.gson.annotations.SerializedName;
 public class Forecast {
     public String weaid;
 
-    public String citynm;     //城市名
-
     @SerializedName("days")
     public String date;     //预报日期
 
@@ -24,8 +22,6 @@ public class Forecast {
     @SerializedName("weather")
     public String condition; //天气状况
 
-    public String wind;         //风向
-
-    public String winp;         //风力
+    public String weather_icon;         //天气图标
 
 }

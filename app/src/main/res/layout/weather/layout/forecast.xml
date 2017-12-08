@@ -7,67 +7,20 @@
     android:layout_margin="15dp"
     android:background="@color/show50"
     >
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
+    <!--预测温度折线图-->
+    <com.github.mikephil.charting.charts.LineChart
+        android:id="@+id/forecast_line_chart"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="15dp"
-        android:layout_marginStart="15dp">
-
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"
-            />
-
-        <TextView
-            android:layout_weight="0.5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast_min"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"/>
-
-        <TextView
-            android:layout_weight="0.5"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast_max"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"/>
-
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast_cond"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"/>
-
-        <TextView
-            android:layout_weight="2"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="@string/show_forecast_wind"
-            android:textColor="@color/colorWhite"
-            android:textSize="@dimen/segment_title"
-            android:gravity="center"/>
-
-    </LinearLayout>
-
+        android:layout_height="200dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"/>
+    预测的星期、天气情况等信息
     <LinearLayout
         android:id="@+id/forecast_layout"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
 
     </LinearLayout>
 

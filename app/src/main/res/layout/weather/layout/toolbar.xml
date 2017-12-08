@@ -16,7 +16,7 @@
 
     <Button
         android:id="@+id/weather_toolbar_city_btn"
-        android:layout_width="20dp"
+        android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginStart="10dp"
         android:layout_alignParentStart="true"
@@ -28,21 +28,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/weather_toolbar_city_btn"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
         android:layout_centerVertical="true"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/segment_title"/>
 
     <TextView
-        android:id="@+id/weather_toolbar_title_date_txt"
+        android:id="@+id/weather_toolbar_date_txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="10dp"
-        android:layout_gravity="end"
+        android:layout_gravity="center"
         android:layout_centerVertical="true"
         android:gravity="center"
         android:textColor="@color/colorWhite"
-        android:textSize="16dp"/>
+        android:textSize="16sp"/>
+
+    <Button
+        android:id="@+id/weather_toolbar_more_btn"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginEnd="10dp"
+        android:layout_gravity="end|center_vertical"
+        android:background="@drawable/ic_settings"/>
+
     </android.support.v7.widget.Toolbar>
 
 </RelativeLayout>

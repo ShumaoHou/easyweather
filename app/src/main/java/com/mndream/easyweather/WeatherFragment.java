@@ -2,6 +2,8 @@ package com.mndream.easyweather;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.graphics.ColorUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -27,6 +30,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IAxisValueFormatter;
+import com.github.mikephil.charting.formatter.IValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.mndream.easyweather.gson.Forecast;
 import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.gson.WeatherFuture;
@@ -37,6 +53,7 @@ import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -58,22 +75,16 @@ public class WeatherFragment extends Fragment{
 
     public SwipeRefreshLayout swipeRefreshLayout;
     public DrawerLayout drawerLayout;
-    private Toolbar toolbar;
-    private ImageView weatherBgPic;
+    private ImageView weatherBgPic,weatherInfoImg;
     private ScrollView weatherLayout;
-    private TextView titleCity;
-    private TextView titleDate;
-    private TextView nowDegreeText;
-    private TextView nowConditionText;
-    private TextView now1txt;
-    private TextView now2txt;
-    private TextView now3txt;
-    private TextView now4txt;
-    private TextView now5txt;
-    private TextView now6txt;
-    private LinearLayout nowAqi;
-    private LinearLayout forecastLayout;
-    private Button titleCityBtn;
+    private TextView toolbarCity, toolbarDate,nowDegreeText,nowConditionText,
+            now1txt,now2txt,now3txt,now4txt,now5txt,now6txt;
+    private LinearLayout nowAqi,forecastLayout;
+    private Button toolbarCityBtn,toolbarMoreBtn;
+    private LineChart mChart;
+
+    private ArrayList<Entry> mMaxDegreeList;    //预测最大温度列表
+    private ArrayList<Entry> mMinDegreeList;    //预测最低温度列表
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -91,7 +102,6 @@ public class WeatherFragment extends Fragment{
                 .edit();
         editor.putBoolean("first_start",false);
         editor.apply();
-
     }
 
     @Override
@@ -108,10 +118,11 @@ public class WeatherFragment extends Fragment{
         drawerLayout = v.findViewById(R.id.drawer_layout);
         weatherBgPic = v.findViewById(R.id.weather_bg_pic);
         weatherLayout = v.findViewById(R.id.weather_layout);
-        titleCity = v.findViewById(R.id.weather_toolbar_city_txt);
-        titleDate = v.findViewById(R.id.weather_toolbar_title_date_txt);
+        toolbarCity = v.findViewById(R.id.weather_toolbar_city_txt);
+        toolbarDate = v.findViewById(R.id.weather_toolbar_date_txt);
         nowDegreeText = v.findViewById(R.id.degree_text);
         nowConditionText = v.findViewById(R.id.weather_info_text);
+        weatherInfoImg = v.findViewById(R.id.weather_info_img);
         now1txt = v.findViewById(R.id.now_1_txt);
         now2txt = v.findViewById(R.id.now_2_txt);
         now3txt = v.findViewById(R.id.now_3_txt);
@@ -120,6 +131,7 @@ public class WeatherFragment extends Fragment{
         now6txt = v.findViewById(R.id.now_6_txt);
         nowAqi = v.findViewById(R.id.now_aqi);
         forecastLayout = v.findViewById(R.id.forecast_layout);
+        mChart = v.findViewById(R.id.forecast_line_chart);
         swipeRefreshLayout = v.findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -128,37 +140,31 @@ public class WeatherFragment extends Fragment{
                 requestWeather(mWeatherId);
             }
         });
-
-        toolbar = v.findViewById(R.id.weather_toolbar);
-        toolbar.inflateMenu(R.menu.weather_toolbar);
-        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch(item.getItemId()){
-                    case R.id.weather_settings_btn:{
-                        Intent settingsIntent = new Intent(getActivity(),SettingsActivity.class);
-                        startActivity(settingsIntent);
-                        break;
-                    }
-                }
-                return  true;
-            }
-        });
-
-        titleCityBtn = v.findViewById(R.id.weather_toolbar_city_btn);
-        titleCityBtn.setOnClickListener(new View.OnClickListener() {
+        //选择城市按钮
+        toolbarCityBtn = v.findViewById(R.id.weather_toolbar_city_btn);
+        toolbarCityBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-        titleCity.setOnClickListener(new View.OnClickListener() {
+        toolbarCity.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
+        //设置按钮
+        //设置弹出菜单
+        toolbarMoreBtn = v.findViewById(R.id.weather_toolbar_more_btn);
+        toolbarMoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent settingsIntent = new Intent(getActivity(),SettingsActivity.class);
+                startActivity(settingsIntent);
+            }
+        });
+        //初始化数据
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String weatherT = prefs.getString("weather1.2t",null);
         String weatherF = prefs.getString("weather1.2f",null);
@@ -397,11 +403,19 @@ public class WeatherFragment extends Fragment{
      */
     private void showWeatherInfo(Weather weather) {
 
-        String cityName = weather.today.result.citynm;   //城市名
-        titleCity.setText(cityName);
+        ArrayList<String> dateList = new ArrayList<>();  //预测日期列表
+        ArrayList<String> weekList = new ArrayList<>();  //预测星期列表
+        mMaxDegreeList = new ArrayList<>();
+        mMinDegreeList = new ArrayList<>();
 
-        String updateTime = weather.today.result.date + "\n" + weather.today.result.week;  //时间
-        titleDate.setText(updateTime);
+        String cityName = weather.today.result.citynm;   //城市名
+        toolbarCity.setText(cityName);
+
+        String dateTime = weather.today.result.date.split("-")[1]
+                + "."
+                + weather.today.result.date.split("-")[2]
+                + "\n" + weather.today.result.week;  //时间
+        toolbarDate.setText(dateTime);
 
         String degree =  weather.today.result.temp_curr + "℃";  //温度
         nowDegreeText.setText(degree);
@@ -421,7 +435,7 @@ public class WeatherFragment extends Fragment{
         String winp =  weather.today.result.winp;     //风力
         now4txt.setText(winp);
 
-        String aqi = "空气质量："  + weather.pm25.result.aqi + "    " + weather.pm25.result.aqi_levid +"级    " + weather.pm25.result.aqi_levnm;         //aqi
+        String aqi = "空气质量："  + weather.pm25.result.aqi + "      " + weather.pm25.result.aqi_levid +"级      " + weather.pm25.result.aqi_levnm;         //aqi
         now5txt.setText(aqi);
 
         String remark = "运动建议：" + weather.pm25.result.aqi_remark;
@@ -435,37 +449,162 @@ public class WeatherFragment extends Fragment{
         //设置预报部分
         forecastLayout.removeAllViews();
         List<Forecast> forecastList = weather.future.forecastList;
-        for(int i = 1; i<forecastList.size();i++){
-            Forecast forecast = forecastList.get(i);
+        for(int i = 0; i<forecastList.size();i++){
             //每个预报的天气项
+            Forecast forecast = forecastList.get(i);
             View view = LayoutInflater.from(getActivity())
                     .inflate(R.layout.forecast_item, forecastLayout, false);
-            TextView dateText = view.findViewById(R.id.date_text);
-            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2] + "\n" + forecast.week;
-            dateText.setText(dateString);
-
-            TextView maxText = view.findViewById(R.id.max_text);
-            String maxString = forecast.temp_high + "℃";
-            maxText.setText(maxString);
-
-            TextView minText = view.findViewById(R.id.min_text);
-            String minString = forecast.temp_low + "℃";
-            minText.setText(minString);
-
-
-            TextView condText = view.findViewById(R.id.cond_text);
+            //设置日期
+            TextView dateText = view.findViewById(R.id.forecast_item_date_text);
+            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2] ;
+            if(i ==0 ){
+                dateText.setText("今天");
+            }else{
+                dateText.setText(forecast.week);
+            }
+            //存储日期、星期信息
+            dateList.add(dateString);
+            //最高温度
+            String maxString = forecast.temp_high;
+            mMaxDegreeList.add(new Entry(i,Float.parseFloat(maxString)));
+            //最低温度
+            String minString = forecast.temp_low;
+            mMinDegreeList.add(new Entry(i,Float.parseFloat(minString)));
+            //天气情况
+            TextView condText = view.findViewById(R.id.forecast_item_cond_text);
             condText.setText(forecast.condition);
-
-            TextView windText = view.findViewById(R.id.wind_text);
-            String windString = forecast.winp + "\n"+ forecast.wind;
-            windText.setText(windString);
-
+            //天气图标
+            ImageView icon = view.findViewById(R.id.forecast_item_icon);
+            String iconFileName = forecast.weather_icon.split("/")[6];
+            String iconNum = iconFileName.substring(0,iconFileName.length()-4);
+            ApplicationInfo appInfo = getActivity().getApplicationInfo();
+            int resID = getResources().getIdentifier("w"+iconNum, "drawable", appInfo.packageName);
+            if(i==0){
+                Glide.with(getActivity()).load(resID).into(weatherInfoImg);
+            }
+            Glide.with(getActivity()).load(resID).into(icon);
+            //设置子控件属性
+            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
             forecastLayout.addView(view);
         }
+        initForecastLineChart(dateList);
 
         weatherLayout.setVisibility(View.VISIBLE);
         //启动自动更新服务
         Intent intent = new Intent(getActivity(), AutoUpdateService.class);
         getActivity().startService(intent);
+    }
+
+    public void initForecastLineChart( final ArrayList<String> dateList){
+        //设置chart属性
+        //描述不可用
+        mChart.getDescription().setEnabled(false);
+        //设置动画
+        mChart.animateY(1000);
+        mChart.setNoDataText("暂时没有天气数据");
+        mChart.setTouchEnabled(false);
+        //设置图例
+        Legend legend = mChart.getLegend();
+        legend.setEnabled(false);
+        //设置Y轴
+        YAxis yAxisL = mChart.getAxisLeft();
+        YAxis yAxisR = mChart.getAxisRight();
+        yAxisL.setEnabled(false);
+        yAxisR.setEnabled(false);
+        yAxisL.setMinWidth(10f);
+        //设置X轴
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setTextSize(12f);
+        xAxis.setTextColor(Color.WHITE);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setGranularity(1f);
+        xAxis.setValueFormatter(new IAxisValueFormatter() {
+            @Override
+            public String getFormattedValue(float value, AxisBase axis) {
+                int i = (int)value;
+                return dateList.get(i);
+            }
+        });
+        //设置间隔线
+        LimitLine xLimitLine1 = new LimitLine(0.5f,"");
+        LimitLine xLimitLine2 = new LimitLine(1.5f,"");
+        LimitLine xLimitLine3 = new LimitLine(2.5f,"");
+        LimitLine xLimitLine4 = new LimitLine(3.5f,"");
+        LimitLine xLimitLine5 = new LimitLine(4.5f,"");
+        LimitLine xLimitLine6 = new LimitLine(5.5f,"");
+        xLimitLine1.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xLimitLine2.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xLimitLine3.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xLimitLine4.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xLimitLine5.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xLimitLine6.setLineColor(ColorUtils.setAlphaComponent(Color.GRAY,192));
+        xAxis.addLimitLine(xLimitLine1);
+        xAxis.addLimitLine(xLimitLine2);
+        xAxis.addLimitLine(xLimitLine3);
+        xAxis.addLimitLine(xLimitLine4);
+        xAxis.addLimitLine(xLimitLine5);
+        xAxis.addLimitLine(xLimitLine6);
+        LineDataSet lineDataSetMax;
+        LineDataSet lineDataSetMin;
+        if(mChart.getData() != null
+                && mChart.getData().getDataSetCount() > 0) {//判断图表原来是否有数据
+            //获取数据集
+            lineDataSetMax = (LineDataSet) mChart.getData().getDataSetByIndex(0);
+            lineDataSetMin = (LineDataSet) mChart.getData().getDataSetByIndex(1);
+            //设置数据
+            lineDataSetMax.setValues(mMaxDegreeList);
+            lineDataSetMin.setValues(mMinDegreeList);
+            //刷新数据
+            mChart.getData().notifyDataChanged();
+            mChart.notifyDataSetChanged();
+        }else{
+            //设置数据集-最高温线
+            lineDataSetMax= new LineDataSet(mMaxDegreeList, "最高温");
+            lineDataSetMax.setColors(ColorUtils.setAlphaComponent(Color.rgb(255,102,0),192));//折线颜色
+            lineDataSetMax.setLineWidth(2f);//折线宽度
+            lineDataSetMax.setAxisDependency(YAxis.AxisDependency.LEFT);//对准基线
+            lineDataSetMax.setValueTextColor(Color.WHITE);//标值字体颜色
+            lineDataSetMax.setValueTextSize(12f);//标值字体大小
+            lineDataSetMax.setCircleColor(Color.WHITE);//数据圆点颜色
+            lineDataSetMax.setCircleRadius(2f);//数据圆点半径
+            lineDataSetMax.setValueFormatter(new IValueFormatter() {    //设置折线上数值显示模式
+                @Override
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                    int i = (int)value;
+                    String value2 = i + "°";
+                    return value2;
+                }
+            });
+            //设置数据集-最低温线
+            lineDataSetMin = new LineDataSet(mMinDegreeList, "最低温");
+            lineDataSetMin.setColors(ColorUtils.setAlphaComponent(Color.rgb(0,204,255),192));//折线颜色
+            lineDataSetMin.setLineWidth(2f);//折线宽度
+            lineDataSetMin.setAxisDependency(YAxis.AxisDependency.LEFT);//对准基线
+            lineDataSetMin.setValueTextColor(Color.WHITE);//标值字体颜色
+            lineDataSetMin.setValueTextSize(12f);//标值字体大小
+            lineDataSetMin.setCircleColor(Color.WHITE);//数据圆点颜色
+            lineDataSetMin.setCircleRadius(2f);//数据圆点半径
+            lineDataSetMin.setValueFormatter(new IValueFormatter() {   //设置折线上数值显示模式
+                @Override
+                public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
+                    int i = (int)value;
+                    String value2 = i + "°";
+                    return value2;
+                }
+            });
+            //线的集合（可单条或多条线）
+            List<ILineDataSet> dataSets = new ArrayList<>();
+            dataSets.add(lineDataSetMax);
+            dataSets.add(lineDataSetMin);
+            //把要画的所有线(线的集合)添加到LineData里
+            LineData lineData = new LineData(dataSets);
+            //设置显示数值
+            lineData.setDrawValues(true);
+            //添加数据到图表中
+            mChart.setData(lineData);
+        }
+        mChart.invalidate();
     }
 }
