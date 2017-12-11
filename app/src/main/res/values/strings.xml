@@ -33,4 +33,5 @@
         OkHttp\nhttps://github.com/square/okhttp\n
         SwitchButton\nhttps://github.com/kyleduo/SwitchButton\n
         MPAndroidChart\nhttps://github.com/PhilJay/MPAndroidChart\n</string>
+    <string name="weather_bg_pic">背景图片</string>
 </resources>

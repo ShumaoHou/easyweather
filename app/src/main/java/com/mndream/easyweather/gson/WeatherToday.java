@@ -14,7 +14,6 @@ public class WeatherToday {
     public Today result;
 
     public class Today{
-        public String weaid;
 
         public String citynm;     //城市名
 

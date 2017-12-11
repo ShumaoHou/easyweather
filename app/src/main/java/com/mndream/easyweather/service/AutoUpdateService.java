@@ -11,14 +11,18 @@ import android.preference.PreferenceManager;
 import android.widget.Toast;
 
 import com.mndream.easyweather.MyApplication;
-import com.mndream.easyweather.WeatherActivity;
+import com.mndream.easyweather.WeatherPagerActivity;
+import com.mndream.easyweather.db.SelectedCounty;
 import com.mndream.easyweather.gson.WeatherFuture;
 import com.mndream.easyweather.gson.WeatherPM25;
 import com.mndream.easyweather.gson.WeatherToday;
 import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.IOException;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -29,6 +33,8 @@ public class AutoUpdateService extends Service {
     private final String SIGN = "59e4d7bda830fa4c19bd86b58f3856ba";
     private final String APP_KEY = "30131";
 
+    private String mWeatherId;
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -36,7 +42,8 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (WeatherActivity.isNetworkConnected(MyApplication.getContext())){
+        mWeatherId = intent.getStringExtra("weather_id");
+        if (WeatherPagerActivity.isNetworkConnected(MyApplication.getContext())){
             updateWeather();
             updateBgPic();
         }else{
@@ -45,7 +52,7 @@ public class AutoUpdateService extends Service {
         }
 
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int cycleTime = 60 * 60 * 1000; //一周期一小时的毫秒数
+        int cycleTime = 4 * 60 * 60 *1000; //一周期4小时的毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + cycleTime;
         Intent i = new Intent(this,AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this ,0,i,0);
@@ -82,16 +89,7 @@ public class AutoUpdateService extends Service {
      * 更新天气信息
      */
     private void updateWeather() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String weatherT = prefs.getString("weather1.2t",null);
-        String weatherF = prefs.getString("weather1.2f",null);
-        String weatherP = prefs.getString("weather1.2p",null);
-        if(weatherT != null && weatherF != null && weatherP != null){
-            //获取天气ID
-            WeatherToday weatherToday = Utility.handleWeatherTodayResponse(weatherT);
-            String weatherId = weatherToday.result.weaid;
-            requestWeather(weatherId);
-        }
+        requestWeather(mWeatherId);
     }
 
     private void requestWeather(final String weatherId){
@@ -113,12 +111,10 @@ public class AutoUpdateService extends Service {
                 final String responseText = response.body().string();
                 final WeatherToday weatherToday = Utility.handleWeatherTodayResponse(responseText);
                 if(weatherToday != null && "1".equals(weatherToday.success)){
-                    //将天气数据缓存
-                    SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(AutoUpdateService.this)
-                            .edit();
-                    editor.putString("weather1.2t",responseText);
-                    editor.apply();
+                    //更新数据库
+                    SelectedCounty updateCounty = new SelectedCounty();
+                    updateCounty.setToday(responseText);
+                    updateCounty.updateAll("weatherId = ?", mWeatherId);
                     requestFuture(weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
@@ -146,12 +142,10 @@ public class AutoUpdateService extends Service {
                 final WeatherFuture weatherFuture = Utility.handleWeatherFutureResponse(responseText);
 
                 if(weatherFuture != null && "1".equals(weatherFuture.success)){
-                    //将天气数据缓存
-                    SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(AutoUpdateService.this)
-                            .edit();
-                    editor.putString("weather1.2f",responseText);
-                    editor.apply();
+                    //更新数据库
+                    SelectedCounty updateCounty = new SelectedCounty();
+                    updateCounty.setFuture(responseText);
+                    updateCounty.updateAll("weatherId = ?", mWeatherId);
                     requestPM25(weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
@@ -179,13 +173,10 @@ public class AutoUpdateService extends Service {
                 final WeatherPM25 weatherPM25 = Utility.handleWeatherPM25Response(responseText);
 
                 if(weatherPM25 != null && "1".equals(weatherPM25.success)){
-                    //将天气数据缓存
-                    SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(AutoUpdateService.this)
-                            .edit();
-                    editor.putString("weather1.2p",responseText);
-                    editor.apply();
-
+                    //更新数据库
+                    SelectedCounty updateCounty = new SelectedCounty();
+                    updateCounty.setPm25(responseText);
+                    updateCounty.updateAll("weatherId = ?", mWeatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
                             errorText,Toast.LENGTH_SHORT).show();

@@ -2,9 +2,10 @@ package com.mndream.easyweather;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 import com.mndream.easyweather.db.City;
 import com.mndream.easyweather.db.County;
 import com.mndream.easyweather.db.Province;
+import com.mndream.easyweather.db.SelectedCounty;
 import com.mndream.easyweather.util.Utility;
 import org.litepal.crud.DataSupport;
 import java.io.IOException;
@@ -29,7 +31,7 @@ import java.util.List;
  * 遍历省市县三级的Fragment
  */
 
-public class ChooseAreaFragment extends Fragment {
+public class ChooseAreaActivity extends AppCompatActivity {
     public static final int LEVEL_PROVINCE = 0;
     public static final int LEVEL_CITY= 1;
     public static final int LEVEL_COUNTY= 2;
@@ -48,22 +50,33 @@ public class ChooseAreaFragment extends Fragment {
     private City mSelectedCity;         //选中的城市
     private int mCurrentLevel;          //当前选中的级别
 
-
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_choose_area,container,false);
-        mTitleText =  view.findViewById(R.id.title_text);
-        mBackButton =  view.findViewById(R.id.back_button);
-        mListView =  view.findViewById(R.id.list_view);
-        mAdapter = new ArrayAdapter<>(getContext(),android.R.layout.simple_list_item_1,dataList);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_choose_area);
+
+        List<SelectedCounty> selectedCountyList = DataSupport.findAll(SelectedCounty.class);
+        String weatherT;
+        String weatherF;
+        String weatherP;
+        final Boolean weatherAdd = getIntent().getBooleanExtra("weather_add",false);//是否为添加城市
+        if(selectedCountyList.size()>0 && !weatherAdd){
+            weatherT = selectedCountyList.get(0).getToday();
+            weatherF = selectedCountyList.get(0).getFuture();
+            weatherP = selectedCountyList.get(0).getPm25();
+            if(weatherT != null && weatherF != null && weatherP != null){
+                Intent intent = new Intent(this,WeatherPagerActivity.class);
+                startActivity(intent);
+                finish();   //结束当前活动
+            }
+        }
+
+        mTitleText =  findViewById(R.id.title_text);
+        mBackButton =  findViewById(R.id.back_button);
+        mListView =  findViewById(R.id.list_view);
+        mAdapter = new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,dataList);
         mListView.setAdapter(mAdapter);
-        return view;
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -74,21 +87,26 @@ public class ChooseAreaFragment extends Fragment {
                     mSelectedCity = mCityList.get(i);
                     queryCounties();
                 }else if(mCurrentLevel == LEVEL_COUNTY){
+                    //存储所选择的城市天气id
                     String weatherId = mCountyList.get(i).getWeaid();
-                    if(getActivity() instanceof MainActivity){
-                        //当前活动为MainActivity，即从未选择过城市
-                        Intent intent = new Intent(getActivity(),WeatherActivity.class);
-                        intent.putExtra("weather_id",weatherId);
-                        startActivity(intent);
-                        getActivity().finish();
-                    } else if(getActivity() instanceof WeatherActivity) {
-                        //当前活动为WeatherActivity，即已经选择过城市，侧边滑出选择
-                        WeatherActivity activity = (WeatherActivity) getActivity();
-                        WeatherFragment fragment= (WeatherFragment) activity.getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-                        fragment.drawerLayout.closeDrawers();
-                        fragment.swipeRefreshLayout.setRefreshing(true);
-                        fragment.requestWeather(weatherId);
+                    List<SelectedCounty> selectedCountyList = DataSupport
+                            .where("weatherId = ?", weatherId)
+                            .find(SelectedCounty.class);
+                    if(selectedCountyList.size()<=0) {
+                        SelectedCounty selectedCounty = new SelectedCounty();
+                        selectedCounty.setWeatherId(weatherId);
+                        selectedCounty.setCountyName(mCountyList.get(i).getName());
+                        selectedCounty.save();
                     }
+                    //保存所选当前天气ID，结束当前活动
+                    SharedPreferences.Editor editor = getSharedPreferences("weather_current",0).edit();
+                    editor.putString("weather_id",weatherId);
+                    editor.apply();
+                    if(!weatherAdd){    //如果不是从天气界面启动的，就是首次启动
+                        Intent intent = new Intent(ChooseAreaActivity.this,WeatherPagerActivity.class);
+                        startActivity(intent);
+                    }
+                    finish();
 
                 }
             }
@@ -104,7 +122,7 @@ public class ChooseAreaFragment extends Fragment {
             }
         });
         try {
-            InputStream is = getActivity().getAssets().open("list_weather2.txt");
+            InputStream is = getAssets().open("list_weather2.txt");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -193,7 +211,7 @@ public class ChooseAreaFragment extends Fragment {
         }
         if(result){
             //成功解析，则从本地数据库读取数据
-            getActivity().runOnUiThread(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     closeDialog();
@@ -207,11 +225,11 @@ public class ChooseAreaFragment extends Fragment {
                 }
             });
         }else{
-            getActivity().runOnUiThread(new Runnable() {
+            runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     closeDialog();
-                    Toast.makeText(getActivity(),"查找城市失败",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(ChooseAreaActivity.this,"查找城市失败",Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -222,7 +240,7 @@ public class ChooseAreaFragment extends Fragment {
      */
     private void showDialog() {
         if(mDialog == null){
-            mDialog = new ProgressDialog(getActivity());
+            mDialog = new ProgressDialog(this);
             mDialog.setMessage("正在加载...");
             mDialog.setCanceledOnTouchOutside(false);   //点击空白处不能取消
         }

@@ -19,7 +19,7 @@ import java.util.List;
 
 /**
  * Created by Administrator on 2017/11/15.
- * 处理json返回数据的工具类
+ * 工具类
  */
 
 public class Utility {
@@ -154,4 +154,6 @@ public class Utility {
         }
         return false;
     }
+
+
 }

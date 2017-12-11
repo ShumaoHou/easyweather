@@ -22,9 +22,12 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
+import com.mndream.easyweather.db.SelectedCounty;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.List;
 
@@ -48,11 +51,12 @@ public class SettingsActivity extends AppCompatActivity {
     private SwitchButton mIsDIYBtn;
     private LinearLayout mSettingsAbout;
 
-    //动画变量
-    private Animation mShowAction;
-    private Animation mHiddenAction;
-    private Animation animIn;
-    private Animation animOut;
+    private Boolean isDIY = false;
+    private String bgPic = null;
+    private String diy = null;
+    private String diy_cache = null;
+    private String mWeatherId = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +65,22 @@ public class SettingsActivity extends AppCompatActivity {
         mSettingsContainer = findViewById(R.id.settings_container);
         mIsDIYDetails = findViewById(R.id.settings_is_diy_details);
         mSettingsIsDIYSelectImg = findViewById(R.id.settings_is_diy_select_img);
+
+        mWeatherId = getIntent().getStringExtra("weather_id");
+        SelectedCounty mCurrentCounty = null;
+        List<SelectedCounty> selectedCountyList = DataSupport
+                .where("weatherId = ?", mWeatherId)
+                .find(SelectedCounty.class);
+        if(selectedCountyList.size()>0){
+            mCurrentCounty = selectedCountyList.get(0);
+        }
+        if(mCurrentCounty != null){
+            isDIY = mCurrentCounty.getDIY();
+            bgPic = mCurrentCounty.getPicAuto();
+            diy = mCurrentCounty.getPicDIY();
+            diy_cache = mCurrentCounty.getPicDIYCache();
+        }//是否自定义背景
+
         //返回按钮
         Button backBtn = findViewById(R.id.settings_toolbar_back_btn);
         backBtn.setOnClickListener(new View.OnClickListener() {
@@ -74,17 +94,12 @@ public class SettingsActivity extends AppCompatActivity {
         mIsDIYBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(SettingsActivity.this)
-                        .edit();
                 if(b){
-//                    mSettingsIsDIYSelect.startAnimation(animIn);
-//                    mSettingsIsDIYSelect.setVisibility(View.VISIBLE);
                     mIsDIYDetails.setText(R.string.settings_is_diy_details_on);
-                    editor.putBoolean("bg_pic_is_diy", true);
-                    editor.putString("bg_pic_diy_cache", null); //清空DIY缓存，使图片能够刷新
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
-                    String diy = prefs.getString("bg_pic_diy",null);
+                    SelectedCounty updateCounty = new SelectedCounty();
+                    updateCounty.setDIY(true);
+                    updateCounty.setPicDIYCache(null);
+                    updateCounty.updateAll("weatherId = ?", mWeatherId);
                     if(!TextUtils.isEmpty(diy)){
                         final Uri bgPicUri = Uri.parse(diy);
                         Glide.with(SettingsActivity.this).load(bgPicUri).into(mSettingsIsDIYSelectImg);
@@ -93,13 +108,13 @@ public class SettingsActivity extends AppCompatActivity {
                         mSettingsContainer.addView(mSettingsIsDIYSelect, 1);
                     }
                 }else{
-//                    mSettingsIsDIYSelect.startAnimation(animOut);
-//                    mSettingsIsDIYSelect.setVisibility(View.GONE);
                     mIsDIYDetails.setText(R.string.settings_is_diy_details_off);
-                    editor.putBoolean("bg_pic_is_diy", false);
+                    SelectedCounty updateCounty = new SelectedCounty();
+                    updateCounty.setDIY(false);
+                    updateCounty.setPicDIYCache(null);
+                    updateCounty.updateAll("weatherId = ?", mWeatherId);
                     mSettingsContainer.removeView(mSettingsIsDIYSelect);
                 }
-                editor.apply();
             }
         });
         mSettingsIsDIY = findViewById(R.id.settings_is_diy);
@@ -138,12 +153,9 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
         //初始化界面
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean isDIY = prefs.getBoolean("bg_pic_is_diy",false);//是否自定义背景
         if(isDIY){
             mIsDIYBtn.setChecked(true);
             mIsDIYDetails.setText(R.string.settings_is_diy_details_on);
-            String diy = prefs.getString("bg_pic_diy",null);                //当前设定的自定义图片
             if(isDIY && !TextUtils.isEmpty(diy)) {
                 final Uri bgPicUri = Uri.parse(diy);
                 Glide.with(SettingsActivity.this).load(bgPicUri).into(mSettingsIsDIYSelectImg);
@@ -164,12 +176,10 @@ public class SettingsActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_CHOOSE && resultCode == RESULT_OK) {
             mSelected = Matisse.obtainResult(data);
             Log.d("Matisse", "mSelected: " + mSelected);
-            SharedPreferences.Editor editor = PreferenceManager
-                    .getDefaultSharedPreferences(this)
-                    .edit();
-            editor.putString("bg_pic_diy", mSelected.get(0).toString());
-            editor.putBoolean("bg_pic_is_diy", true);
-            editor.apply();
+            SelectedCounty updateCounty = new SelectedCounty();
+            updateCounty.setDIY(true);
+            updateCounty.setPicDIY(mSelected.get(0).toString());
+            updateCounty.updateAll("weatherId = ?", mWeatherId);
             finish();
             this.overridePendingTransition(0,R.anim.out_to_top);
         }

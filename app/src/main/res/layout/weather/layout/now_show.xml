@@ -49,7 +49,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <ImageView
-                android:layout_width="24dp"
+                android:layout_width="@dimen/now_icon_size"
                 android:layout_height="@dimen/now_icon_size"
                 android:background="@drawable/now_tmp"/>
             <LinearLayout
