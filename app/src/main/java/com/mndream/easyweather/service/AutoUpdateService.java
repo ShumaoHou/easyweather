@@ -33,7 +33,7 @@ public class AutoUpdateService extends Service {
     private final String SIGN = "59e4d7bda830fa4c19bd86b58f3856ba";
     private final String APP_KEY = "30131";
 
-    private String mWeatherId;
+    private List<SelectedCounty> mSelectedCountyList;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -42,7 +42,7 @@ public class AutoUpdateService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        mWeatherId = intent.getStringExtra("weather_id");
+        mSelectedCountyList = DataSupport.findAll(SelectedCounty.class);
         if (WeatherPagerActivity.isNetworkConnected(MyApplication.getContext())){
             updateWeather();
             updateBgPic();
@@ -62,26 +62,26 @@ public class AutoUpdateService extends Service {
     }
 
     private void updateBgPic() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean isDIY = prefs.getBoolean("bg_pic_is_diy",false);//是否自定义背景
-        if(!isDIY){
-            String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
-            HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
+        for (int i = 0; i < mSelectedCountyList.size(); i++){
+            final SelectedCounty selectedCounty = mSelectedCountyList.get(i);
+            Boolean isDIY = selectedCounty.getDIY();
+            if(!isDIY){
+                String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
+                HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        e.printStackTrace();
+                    }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    final String bgPic = Utility.handleBgPic(response.body().string());;
-                    SharedPreferences.Editor editor = PreferenceManager
-                            .getDefaultSharedPreferences(AutoUpdateService.this)
-                            .edit();
-                    editor.putString("bg_pic", bgPic);
-                    editor.apply();
-                }
-            });
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        final String bgPic = Utility.handleBgPic(response.body().string());;
+                        SelectedCounty updateCounty = new SelectedCounty();
+                        updateCounty.setPicAuto(bgPic);
+                        updateCounty.updateAll("weatherId = ?", selectedCounty.getWeatherId());
+                    }
+                });
+            }
         }
     }
 
@@ -89,7 +89,11 @@ public class AutoUpdateService extends Service {
      * 更新天气信息
      */
     private void updateWeather() {
-        requestWeather(mWeatherId);
+        for (int i = 0; i < mSelectedCountyList.size(); i++) {
+            final SelectedCounty selectedCounty = mSelectedCountyList.get(i);
+            requestWeather(selectedCounty.getWeatherId());
+        }
+
     }
 
     private void requestWeather(final String weatherId){
@@ -114,7 +118,7 @@ public class AutoUpdateService extends Service {
                     //更新数据库
                     SelectedCounty updateCounty = new SelectedCounty();
                     updateCounty.setToday(responseText);
-                    updateCounty.updateAll("weatherId = ?", mWeatherId);
+                    updateCounty.updateAll("weatherId = ?", weatherId);
                     requestFuture(weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
@@ -145,7 +149,7 @@ public class AutoUpdateService extends Service {
                     //更新数据库
                     SelectedCounty updateCounty = new SelectedCounty();
                     updateCounty.setFuture(responseText);
-                    updateCounty.updateAll("weatherId = ?", mWeatherId);
+                    updateCounty.updateAll("weatherId = ?", weatherId);
                     requestPM25(weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
@@ -154,7 +158,7 @@ public class AutoUpdateService extends Service {
             }
         });
     }
-    private void requestPM25(String weatherId){
+    private void requestPM25(final String weatherId){
         //请求PM25数据
         String weatherUrl = "http://api.k780.com/?app=weather.pm25&weaid=" + weatherId +
                 "&appkey=" + APP_KEY +
@@ -176,7 +180,7 @@ public class AutoUpdateService extends Service {
                     //更新数据库
                     SelectedCounty updateCounty = new SelectedCounty();
                     updateCounty.setPm25(responseText);
-                    updateCounty.updateAll("weatherId = ?", mWeatherId);
+                    updateCounty.updateAll("weatherId = ?", weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),
                             errorText,Toast.LENGTH_SHORT).show();

@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.mndream.easyweather.db.SelectedCounty;
+import com.mndream.easyweather.service.AutoUpdateService;
 
 import org.litepal.crud.DataSupport;
 
@@ -83,6 +84,7 @@ public class WeatherPagerActivity extends FragmentActivity{
                 startActivity(settingsIntent);
             }
         });
+
     }
 
     @Override
@@ -176,6 +178,10 @@ public class WeatherPagerActivity extends FragmentActivity{
         mWeatherId = prefs.getString("weather_id",null);
         //初始化点数指示器
         initWeatherDot();
+
+        //        启动自动更新服务
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     /**
