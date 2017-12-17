@@ -11,7 +11,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary">
         <Button
-            android:id="@+id/back_button"
+            android:id="@+id/widget_conf_back_button"
             android:layout_width="25dp"
             android:layout_height="25dp"
             android:layout_marginStart="10dp"
@@ -19,15 +19,15 @@
             android:layout_centerVertical="true"
             android:background="@drawable/ic_back"/>
         <TextView
-            android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:text="@string/widget_conf_title"/>
     </RelativeLayout>
     <ListView
-        android:id="@+id/choose_area_list_view"
+        android:id="@+id/widget_conf_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

@@ -6,8 +6,8 @@ android {
         applicationId "com.mndream.easyweather"
         minSdkVersion 21
         targetSdkVersion 26
-        versionCode 7
-        versionName "1.4.1"
+        versionCode 9
+        versionName "1.4.3"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -23,7 +23,8 @@ android {
                             'src/main/res',
                             'src/main/res/layout/weather',
                             'src/main/res/layout/choose_area',
-                            'src/main/res/layout/settings'
+                            'src/main/res/layout/settings',
+                            'src/main/res/layout/widget'
                     ]
         }
     }
@@ -45,6 +46,7 @@ dependencies {
     compile 'com.zhihu.android:matisse:0.4.3'
     compile 'com.kyleduo.switchbutton:library:2.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+    implementation 'com.android.support:design:27.0.2'
 }
 configurations.all {
     resolutionStrategy.eachDependency { DependencyResolveDetails details ->

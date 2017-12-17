@@ -5,14 +5,26 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.preference.PreferenceManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.github.mikephil.charting.data.Entry;
 import com.mndream.easyweather.MyApplication;
+import com.mndream.easyweather.R;
 import com.mndream.easyweather.WeatherPagerActivity;
 import com.mndream.easyweather.db.SelectedCounty;
+import com.mndream.easyweather.gson.Forecast;
+import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.gson.WeatherFuture;
 import com.mndream.easyweather.gson.WeatherPM25;
 import com.mndream.easyweather.gson.WeatherToday;
@@ -22,6 +34,7 @@ import com.mndream.easyweather.util.Utility;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -33,7 +46,7 @@ public class AutoUpdateService extends Service {
     private final String SIGN = "59e4d7bda830fa4c19bd86b58f3856ba";
     private final String APP_KEY = "30131";
 
-    private List<SelectedCounty> mSelectedCountyList;
+    private List<SelectedCounty> mSelectedCountyList = new ArrayList<>();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -46,13 +59,19 @@ public class AutoUpdateService extends Service {
         if (WeatherPagerActivity.isNetworkConnected(MyApplication.getContext())){
             updateWeather();
             updateBgPic();
+            //更新桌面小部件
+            Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
+            sendBroadcast(updateIntent);
         }else{
             Toast.makeText(MyApplication.getContext(),
                     "自动更新不可用，请连接网络后重试",Toast.LENGTH_SHORT).show();
         }
 
+        SharedPreferences prefs = getSharedPreferences("weather_auto_update",0);
+        int rate = prefs.getInt("weather_auto_update_rate",2);
+
         AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
-        int cycleTime = 4 * 60 * 60 *1000; //一周期4小时的毫秒数
+        int cycleTime = rate * 60 * 60 *1000; //一周期4小时的毫秒数
         long triggerAtTime = SystemClock.elapsedRealtime() + cycleTime;
         Intent i = new Intent(this,AutoUpdateService.class);
         PendingIntent pi = PendingIntent.getService(this ,0,i,0);
@@ -115,9 +134,17 @@ public class AutoUpdateService extends Service {
                 final String responseText = response.body().string();
                 final WeatherToday weatherToday = Utility.handleWeatherTodayResponse(responseText);
                 if(weatherToday != null && "1".equals(weatherToday.success)){
+                    String countyName = weatherToday.result.citynm;   //城市名
+                    String dateTime = weatherToday.result.date.split("-")[1]
+                            + "."
+                            + weatherToday.result.date.split("-")[2]
+                            + "\n" + weatherToday.result.week;  //时间
                     //更新数据库
                     SelectedCounty updateCounty = new SelectedCounty();
                     updateCounty.setToday(responseText);
+                    updateCounty.setTemp_curr(weatherToday.result.temp_curr);
+                    updateCounty.setCountyName(countyName);
+                    updateCounty.setUpdateTime(dateTime);
                     updateCounty.updateAll("weatherId = ?", weatherId);
                     requestFuture(weatherId);
                 }else{
@@ -146,10 +173,23 @@ public class AutoUpdateService extends Service {
                 final WeatherFuture weatherFuture = Utility.handleWeatherFutureResponse(responseText);
 
                 if(weatherFuture != null && "1".equals(weatherFuture.success)){
+                    List<Forecast> forecastList = weatherFuture.forecastList;
+                    //第一预报的天气项
+                    Forecast forecast = forecastList.get(0);
+                    //天气图标
+                    String iconFileName = forecast.weather_icon.split("/")[6];
+                    String iconNum = iconFileName.substring(0,iconFileName.length()-4);
+                    ApplicationInfo appInfo = getApplicationInfo();
+                    int resID = getResources().getIdentifier("w"+iconNum, "drawable", appInfo.packageName);
+
                     //更新数据库
                     SelectedCounty updateCounty = new SelectedCounty();
                     updateCounty.setFuture(responseText);
+                    updateCounty.setIconResId(resID);
                     updateCounty.updateAll("weatherId = ?", weatherId);
+                    //更新桌面小部件
+                    Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
+                    sendBroadcast(updateIntent);
                     requestPM25(weatherId);
                 }else{
                     Toast.makeText(MyApplication.getContext(),

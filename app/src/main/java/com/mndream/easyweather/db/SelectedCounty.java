@@ -1,5 +1,8 @@
 package com.mndream.easyweather.db;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.litepal.crud.DataSupport;
 
 /**
@@ -16,6 +19,10 @@ public class SelectedCounty  extends DataSupport{
     private String weatherId;   //对应的天气id
 
     private String countyName;  //城市名
+
+    private String temp_curr;   //当前温度
+
+    private int iconResId;   //当前天气图标路径
 
     private String updateTime;  //更新时间
 
@@ -47,6 +54,22 @@ public class SelectedCounty  extends DataSupport{
 
     public void setCountyName(String countyName) {
         this.countyName = countyName;
+    }
+
+    public String getTemp_curr() {
+        return temp_curr;
+    }
+
+    public void setTemp_curr(String temp_curr) {
+        this.temp_curr = temp_curr;
+    }
+
+    public int getIconResId() {
+        return iconResId;
+    }
+
+    public void setIconResId(int iconResId) {
+        this.iconResId = iconResId;
     }
 
     public String getUpdateTime() {

@@ -6,9 +6,14 @@
     android:layout_height="wrap_content"
     android:layout_margin="15dp"
     android:gravity="center">
-
     <TextView
         android:id="@+id/forecast_item_date_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorWhite"
+        android:textSize="10dp" />
+    <TextView
+        android:id="@+id/forecast_item_week_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/colorWhite"

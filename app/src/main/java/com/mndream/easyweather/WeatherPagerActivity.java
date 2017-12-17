@@ -174,6 +174,7 @@ public class WeatherPagerActivity extends FragmentActivity{
 
         });
         //获取当前的WeatherID
+        //从pref中获取
         SharedPreferences prefs = getSharedPreferences("weather_current",0);
         mWeatherId = prefs.getString("weather_id",null);
         //初始化点数指示器

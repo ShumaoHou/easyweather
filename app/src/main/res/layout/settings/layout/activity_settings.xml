@@ -35,11 +35,13 @@
             android:layout_height="match_parent"
             android:animateLayoutChanges="true">
 
-            <include layout="@layout/setting_is_diy"/>
+            <include layout="@layout/settings_is_diy"/>
 
-            <include layout="@layout/setting_is_diy_select"/>
+            <include layout="@layout/settings_is_diy_select"/>
 
-            <include layout="@layout/setting_about"/>
+            <include layout="@layout/settings_auto_update"/>
+
+            <include layout="@layout/settings_about"/>
 
         </LinearLayout>
     </ScrollView>

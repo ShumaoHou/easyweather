@@ -1,5 +1,7 @@
 package com.mndream.easyweather.util;
 
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
 import com.mndream.easyweather.db.City;
@@ -23,6 +25,11 @@ import java.util.List;
  */
 
 public class Utility {
+    //判断是否拥有权限
+    public static boolean hasPermission(Context context, String permission){
+        int perm = context.checkCallingOrSelfPermission(permission);
+        return perm == PackageManager.PERMISSION_GRANTED;
+    }
 
     /**
      * 将返回的JSON数据解析成WeatherFuture实体类

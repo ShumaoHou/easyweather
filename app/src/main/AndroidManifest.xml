@@ -19,6 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!--活动-->
         <activity android:name=".ChooseAreaActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,11 +29,12 @@
         </activity>
         <activity android:name=".WeatherPagerActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".AboutActivity"/>
-        <service
-            android:name=".service.AutoUpdateService"
-            android:enabled="true"
-            android:exported="true" />
+        <activity android:name=".AboutActivity" />
+        <activity android:name=".widget.WeatherAppWidgetConfigureActivity">
+            <intent-filter>
+                <action android:name="com.mndream.easyweather.updatewidget" />
+            </intent-filter>
+        </activity>
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -43,6 +45,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths" />
         </provider>
+
+        <receiver android:name=".widget.WeatherAppWidget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/weather_app_widget_info" />
+        </receiver>
+        <!--服务-->
+        <service
+            android:name=".service.AutoUpdateService"
+            android:enabled="true"
+            android:exported="true" />
     </application>
 
 </manifest>

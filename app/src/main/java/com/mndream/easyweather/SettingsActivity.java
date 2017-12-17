@@ -1,10 +1,14 @@
 package com.mndream.easyweather;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +27,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.kyleduo.switchbutton.SwitchButton;
 import com.mndream.easyweather.db.SelectedCounty;
+import com.mndream.easyweather.util.Utility;
 import com.zhihu.matisse.Matisse;
 import com.zhihu.matisse.MimeType;
 import com.zhihu.matisse.engine.impl.GlideEngine;
@@ -46,10 +51,8 @@ public class SettingsActivity extends AppCompatActivity {
     private LinearLayout mSettingsContainer;
     private LinearLayout mSettingsIsDIYSelect;
     private ImageView mSettingsIsDIYSelectImg;
-    private LinearLayout mSettingsIsDIY;
     private TextView mIsDIYDetails;
     private SwitchButton mIsDIYBtn;
-    private LinearLayout mSettingsAbout;
 
     private Boolean isDIY = false;
     private String bgPic = null;
@@ -117,7 +120,7 @@ public class SettingsActivity extends AppCompatActivity {
                 }
             }
         });
-        mSettingsIsDIY = findViewById(R.id.settings_is_diy);
+        final LinearLayout mSettingsIsDIY = findViewById(R.id.settings_is_diy);
         mSettingsIsDIY.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,23 +132,80 @@ public class SettingsActivity extends AppCompatActivity {
         mSettingsIsDIYSelect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Matisse
-                        .from(SettingsActivity.this)
-                        .choose(MimeType.allOf())//照片视频全部显示
-                        .countable(true)//有序选择图片
-                        .maxSelectable(1)//最大选择数量为9
-                        .gridExpectedSize(360)//图片显示表格的大小getResources()
-                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//图像选择和预览活动所需的方向。
-                        .thumbnailScale(0.85f)//缩放比例
-                        .theme(R.style.Matisse_Zhihu)//主题  暗色主题 R.style.Matisse_Dracula
-                        .imageEngine(new GlideEngine())//加载方式
-                        .forResult(REQUEST_CODE_CHOOSE);//请求码
-                SettingsActivity.this.overridePendingTransition(R.anim.in_from_top,0);
+                String permissionName = "android.permission.WRITE_EXTERNAL_STORAGE";
+                if(Utility.hasPermission(SettingsActivity.this,permissionName)){
+                    Matisse
+                            .from(SettingsActivity.this)
+                            .choose(MimeType.allOf())//照片视频全部显示
+                            .countable(true)//有序选择图片
+                            .maxSelectable(1)//最大选择数量为9
+                            .gridExpectedSize(360)//图片显示表格的大小getResources()
+                            .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//图像选择和预览活动所需的方向。
+                            .thumbnailScale(0.85f)//缩放比例
+                            .theme(R.style.Matisse_Zhihu)//主题  暗色主题 R.style.Matisse_Dracula
+                            .imageEngine(new GlideEngine())//加载方式
+                            .forResult(REQUEST_CODE_CHOOSE);//请求码
+                    SettingsActivity.this.overridePendingTransition(R.anim.in_from_top,0);
+                }else{
+                    Snackbar.make(mSettingsIsDIYSelect,"请开启本应用存储权限",Snackbar.LENGTH_LONG)
+                            .setAction("点击前往设置", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent =  new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                                    startActivity(intent);
+                                }
+                            })
+                            .show();
+                }
             }
         });
+        /*
+        自动更新天气周期设置
+         */
+        final TextView settingsAutoUpdateDetails = findViewById(R.id.settings_auto_update_details);
+        LinearLayout settingsAutoUpdate = findViewById(R.id.settings_auto_update);
+        final String[] rates = {"1小时","2小时","4小时","8小时"};
+        settingsAutoUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+                builder.setTitle("自动更新天气周期");
+                builder.setItems(rates, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        int rate = 2;
+                        switch (which){
+                            case 0:
+                                rate = 1;
+                                break;
+                            case 1:
+                                rate = 2;
+                                break;
+                            case 2:
+                                rate = 4;
+                                break;
+                            case 3:
+                                rate = 8;
+                                break;
+                        }
+                        SharedPreferences.Editor editor = getSharedPreferences("weather_auto_update",0).edit();
+                        editor.putInt("weather_auto_update_rate",rate);
+                        editor.apply();
+                        String detailText = "当前周期为：" + rate + "小时";
+                        settingsAutoUpdateDetails.setText(detailText);
+                    }
+                });
+                builder.show();
+            }
+        });
+        SharedPreferences prefs = getSharedPreferences("weather_auto_update",0);
+        int rate = prefs.getInt("weather_auto_update_rate",2);
+        String detailText = "当前周期为：" + rate + "小时";
+        settingsAutoUpdateDetails.setText(detailText);
+
         //关于按钮
-        mSettingsAbout = findViewById(R.id.settings_about);
-        mSettingsAbout.setOnClickListener(new View.OnClickListener() {
+        LinearLayout settingsAbout = findViewById(R.id.settings_about);
+        settingsAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(SettingsActivity.this,AboutActivity.class);

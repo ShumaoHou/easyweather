@@ -19,7 +19,7 @@
     <string name="settings_is_diy_select_title">点击选择图片</string>
     <!--关于-->
     <string name="settings_about_title">关于</string>
-    <string name="settings_about_details">易天气v1.4.1</string>
+    <string name="settings_about_details">易天气v1.4.3</string>
     <string name="toolbar_settings_about">关于</string>
     <string name="settings_about_github_t">GitHub</string>
     <string name="settings_about_github_a">https://github.com/mndream/easyweather</string>
@@ -34,4 +34,10 @@
         SwitchButton\nhttps://github.com/kyleduo/SwitchButton\n
         MPAndroidChart\nhttps://github.com/PhilJay/MPAndroidChart\n</string>
     <string name="weather_bg_pic">背景图片</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="configure">Configure</string>
+    <string name="add_widget">Add widget</string>
+    <string name="widget_conf_title">选择一个城市</string>
+    <string name="settings_widget_title">桌面小部件刷新间隔时间(越长越省电)</string>
+    <string name="settings_auto_update_title">设置自动更新天气间隔时间</string>
 </resources>

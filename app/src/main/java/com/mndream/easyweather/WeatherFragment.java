@@ -22,8 +22,6 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,7 +29,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
@@ -39,7 +36,6 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.utils.ViewPortHandler;
@@ -49,7 +45,6 @@ import com.mndream.easyweather.gson.Weather;
 import com.mndream.easyweather.gson.WeatherFuture;
 import com.mndream.easyweather.gson.WeatherPM25;
 import com.mndream.easyweather.gson.WeatherToday;
-import com.mndream.easyweather.service.AutoUpdateService;
 import com.mndream.easyweather.util.HttpUtil;
 import com.mndream.easyweather.util.Utility;
 
@@ -244,6 +239,7 @@ public class WeatherFragment extends Fragment{
                 updateCounty.updateAll("weatherId = ?", mWeatherId);
             }
         }else{
+            swipeRefreshLayout.setRefreshing(true);
             if(WeatherPagerActivity.isNetworkConnected(getActivity())){
                 String requestBgPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1";
                 HttpUtil.sendOkHttpRequest(requestBgPic, new Callback() {
@@ -269,8 +265,8 @@ public class WeatherFragment extends Fragment{
             }else{
                 Toast.makeText(mActivity,
                         "请连接网络后重试",Toast.LENGTH_SHORT).show();
-                swipeRefreshLayout.setRefreshing(false);
             }
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -279,6 +275,7 @@ public class WeatherFragment extends Fragment{
      * @param weatherId 天气id
      */
     public void requestWeather(final String weatherId) {
+        swipeRefreshLayout.setRefreshing(true);
         if(WeatherPagerActivity.isNetworkConnected(MyApplication.getContext())){
             //请求实时天气
             String weatherUrl = "http://api.k780.com/?app=weather.today&weaid=" + weatherId +
@@ -315,6 +312,7 @@ public class WeatherFragment extends Fragment{
                                 //更新数据库
                                 SelectedCounty updateCounty = new SelectedCounty();
                                 updateCounty.setToday(responseText);
+                                updateCounty.setTemp_curr(weatherToday.result.temp_curr);
                                 updateCounty.updateAll("weatherId = ?", mWeatherId);
                                 requestFuture(weatherId);
                             }else{
@@ -421,7 +419,6 @@ public class WeatherFragment extends Fragment{
      */
     private void showWeatherInfo(Weather weather) {
 
-        ArrayList<String> dateList = new ArrayList<>();  //预测日期列表
         mMaxDegreeList = new ArrayList<>();
         mMinDegreeList = new ArrayList<>();
 
@@ -467,53 +464,58 @@ public class WeatherFragment extends Fragment{
         //设置预报部分
         forecastLayout.removeAllViews();
         List<Forecast> forecastList = weather.future.forecastList;
-        if(forecastList.size() == 7){
-            for(int i = 0; i<forecastList.size();i++){
-                //每个预报的天气项
-                Forecast forecast = forecastList.get(i);
-                View view = LayoutInflater.from(getActivity())
-                        .inflate(R.layout.forecast_item, forecastLayout, false);
-                //设置日期
-                TextView dateText = view.findViewById(R.id.forecast_item_date_text);
-                String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2] ;
-                //显示星期
-                if(i ==0 ){
-                    dateText.setText("今天");
-                }else{
-                    dateText.setText(forecast.week);
-                }
-                //存储日期信息
-                dateList.add(dateString);
-                //最高温度
-                String maxString = forecast.temp_high;
-                mMaxDegreeList.add(new Entry(i,Float.parseFloat(maxString)));
-                //最低温度
-                String minString = forecast.temp_low;
-                mMinDegreeList.add(new Entry(i,Float.parseFloat(minString)));
-                //天气情况
-                TextView condText = view.findViewById(R.id.forecast_item_cond_text);
-                condText.setText(forecast.condition);
-                //天气图标
-                ImageView icon = view.findViewById(R.id.forecast_item_icon);
-                String iconFileName = forecast.weather_icon.split("/")[6];
-                String iconNum = iconFileName.substring(0,iconFileName.length()-4);
-                ApplicationInfo appInfo = getActivity().getApplicationInfo();
-                int resID = getResources().getIdentifier("w"+iconNum, "drawable", appInfo.packageName);
-                if(i==0){
-                    Glide.with(getActivity()).load(resID).into(weatherInfoImg);
-                }
-                Glide.with(getActivity()).load(resID).into(icon);
-                //设置子控件属性
-                view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
-                forecastLayout.addView(view);
+        for(int i = 0; i<forecastList.size();i++){
+            //每个预报的天气项
+            Forecast forecast = forecastList.get(i);
+            View view = LayoutInflater.from(getActivity())
+                    .inflate(R.layout.forecast_item, forecastLayout, false);
+            //设置日期
+            TextView dateText = view.findViewById(R.id.forecast_item_date_text);
+            String dateString = forecast.date.split("-")[1] + "." + forecast.date.split("-")[2] ;
+            dateText.setText(dateString);
+            //设置星期
+            TextView weekText = view.findViewById(R.id.forecast_item_week_text);
+            if(i ==0 ){
+                weekText.setText("今天");
+            }else{
+                weekText.setText(forecast.week);
             }
+            //最高温度
+            String maxString = forecast.temp_high;
+            mMaxDegreeList.add(new Entry(i,Float.parseFloat(maxString)));
+            //最低温度
+            String minString = forecast.temp_low;
+            mMinDegreeList.add(new Entry(i,Float.parseFloat(minString)));
+            //天气情况
+            TextView condText = view.findViewById(R.id.forecast_item_cond_text);
+            condText.setText(forecast.condition);
+            //天气图标
+            ImageView icon = view.findViewById(R.id.forecast_item_icon);
+            String iconFileName = forecast.weather_icon.split("/")[6];
+            String iconNum = iconFileName.substring(0,iconFileName.length()-4);
+            ApplicationInfo appInfo = getActivity().getApplicationInfo();
+            int resID = getResources().getIdentifier("w"+iconNum, "drawable", appInfo.packageName);
+            if(i==0){
+                SelectedCounty updateCounty1 = new SelectedCounty();
+                updateCounty1.setIconResId(resID);
+                updateCounty1.updateAll("weatherId = ?", mWeatherId);
+                Glide.with(getActivity()).load(resID).into(weatherInfoImg);
+            }
+            Glide.with(getActivity()).load(resID).into(icon);
+            //设置子控件属性
+            view.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, 1.0f));
+            forecastLayout.addView(view);
         }
-        initForecastLineChart(dateList);
+        //更新桌面小部件
+        Intent updateIntent = new Intent("android.appwidget.action.APPWIDGET_UPDATE");
+        getActivity().sendBroadcast(updateIntent);
+        //初始化图表
+        initForecastLineChart();
 
         weatherLayout.setVisibility(View.VISIBLE);
     }
 
-    private void initForecastLineChart( final ArrayList<String> dateList){
+    private void initForecastLineChart(){
         //设置chart属性
         //描述不可用
         mChart.getDescription().setEnabled(false);
@@ -533,18 +535,10 @@ public class WeatherFragment extends Fragment{
         //设置X轴
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setTextSize(12f);
-        xAxis.setTextColor(Color.WHITE);
         xAxis.setDrawGridLines(false);
         xAxis.setDrawAxisLine(false);
+        xAxis.setDrawLabels(false);
         xAxis.setGranularity(1f);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                int i = (int)value;
-                return dateList.get(i);
-            }
-        });
         //设置间隔线
         LimitLine xLimitLine1 = new LimitLine(0.5f,"");
         LimitLine xLimitLine2 = new LimitLine(1.5f,"");

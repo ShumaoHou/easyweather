@@ -1,7 +1,7 @@
 <Litepal>
     <dbname value="WeatherDatabase"/>
 
-    <version value="3"/>
+    <version value="4"/>
 
     <list>
         <mapping class="com.mndream.easyweather.db.Province"/>
