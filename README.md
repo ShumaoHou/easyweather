@@ -1,4 +1,6 @@
-# easyweather
+# 易天气(easyweather)
+
+一款可自定义背景的简易安卓天气应用。
 
 ## 酷安下载地址：
 
